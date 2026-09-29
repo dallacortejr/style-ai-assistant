@@ -1,74 +1,114 @@
-# Copiloto de Consultoria de Imagem e Estilo — Plano das 3 Etapas
+# Copiloto de Consultoria de Imagem — Plano "de trás para frente"
 
-Projeto AI Factory (PUCPR). Abordagem híbrida aprovada: aplicação **Streamlit em Python** como entrega acadêmica (fiel à stack da rubrica) e um **app web aqui no Lovable** como vitrine pública do produto. Dados de clientes serão **fictícios**; os documentos técnicos seguem o padrão do dossiê HH_Pacote1.
+Ponto de partida: o **dossiê final (Pacote 1, 65 páginas)**. Primeiro entendemos cada página, depois definimos como a consultora alimenta cada uma, e só então colocamos a IA por cima. Abordagem híbrida mantida: Streamlit (entrega acadêmica) + app web no Lovable (produto que a consultora usa). Dados de clientes fictícios.
 
-## O que o sistema faz
+## 1. A grande descoberta do dossiê
 
-A consultora cadastra a cliente e as medições da sessão (medidas corporais, contraste pele/cabelo/olhos, formato de rosto, respostas do questionário de temperamento). O copiloto:
+Cada página mistura três tipos de conteúdo. Separá-los é o que torna a automação possível:
 
-1. Sugere classificações técnicas (temperamento, biotipo, cartela de coloração) com um modelo de ML — sempre como **sugestão**, nunca decisão final.
-2. Consulta a base de conhecimento da consultora (RAG) para fundamentar recomendações de cabelo, maquiagem, decotes, óculos, combinações de cores.
-3. Monta o rascunho do dossiê seguindo a estrutura do PDF de referência, seção por seção.
-4. A consultora revisa, edita e aprova; então o dossiê é exportado em PDF.
+| Tipo | O que é | Exemplo no dossiê | Quem produz |
+|---|---|---|---|
+| **A. Conteúdo fixo por categoria** | Texto que se repete para toda cliente com o mesmo resultado | Descrição do temperamento Fleumático; tudo sobre a cartela Outono Suave; "Sobre o corpo Ampulheta" | Biblioteca da consultora (escrita uma vez) |
+| **B. Dados da cliente** | Medidas, notas, escolhas | Ombro 94 / Busto 85 / Cintura 69 / Quadril 91; terços 8 / 6 / 7,5 cm; contraste pele 4, cabelo 7 | Consultora digita na sessão |
+| **C. Análise personalizada** | Texto escrito para aquela cliente | Recomendação de corte e franja; sobrancelha; "canelas grossas" | Hoje manual — aqui entra a IA como rascunho |
 
-## Etapa 1 — Engajar (semana 6)
+Estimativa: cerca de 70% do dossiê é tipo A, 15% tipo B e 15% tipo C. Ou seja: só com uma boa biblioteca e uma ficha de entrada já se elimina a maior parte do trabalho manual, **antes mesmo da IA**.
 
-Entregar o sistema base funcional com interface, LLM, dados e RAG.
+## 2. Mapa do dossiê — página por página
 
-- **Declaração CBL** no README (a que você já escreveu, com a justificativa pessoal mantida em suas palavras).
-- **Dados estruturados (CSVs → DuckDB)**, mínimo 2 tabelas relacionadas — teremos 5:
-  - `clientes` (id, nome fictício, idade, cidade, pacote contratado, data)
-  - `sessoes` (id, cliente_id, data, status, consultora)
-  - `medidas` (sessao_id, ombro, busto, cintura, quadril, altura, proporção superior/inferior)
-  - `diagnosticos` (sessao_id, temperamento primário/secundário, formato de rosto, contraste, biotipo, cartela de coloração)
-  - `dossies` (sessao_id, status de revisão, data de aprovação, tempo de preparo)
-  - Volume: ~400 clientes sintéticos, gerados por script com regras coerentes (ex.: medidas compatíveis com o biotipo rotulado) para servir também de dataset de ML na Etapa 2.
-- **Documentos para RAG (ChromaDB)**, no mínimo 3 — planejados 5:
-  - Manual de Visagismo (temperamentos, formatos de rosto, terços e proporções)
-  - Manual de Tipologia Física (biotipos, proporção corporal, decotes, comprimentos)
-  - Manual de Coloração Pessoal (estações, cores universais, combinações, cores a evitar)
-  - Guia de Detalhamento (cabelo, maquiagem, óculos, acessórios)
-  - FAQ de atendimento e padrões de entrega dos pacotes
-- **Pipeline RAG** com embeddings + busca semântica, respostas com citação da fonte.
-- **Interface Streamlit**: cadastro de cliente/sessão, consulta de dados, chat com o copiloto, visualização do rascunho do dossiê.
-- **System prompt** especializado: fala como assistente técnico da consultora, nunca inventa diagnóstico, sempre cita a seção do manual.
-- **Higiene de repositório**: `.env.example`, `.gitignore`, `requirements.txt`, nenhuma chave no código.
+```text
+BLOCO 0  Capa (p.1)                         B: nome da cliente, pacote
+BLOCO 1  TEMPERAMENTO (p.2-9)
+  p.2   Introdução                          A
+  p.3   Diagnóstico primário + 5 barras %   B: tipo + Pensar/Sentir/Agir/Comunicar/Determinar (%)
+  p.4-6 Primário: positivas/negativas/físico A (por temperamento: 4 textos)
+  p.7   Diagnóstico secundário + tabela     B: tipo
+  p.8-9 Secundário: descrição               A
+BLOCO 2  VISAGISMO (p.10-24)
+  p.11-12 Contraste                         B: notas pele/cabelo/olhos (1-10) -> pontuação e faixa calculadas
+  p.13-14 Formato do rosto + perfil         B: formato (oval, redondo...) + fotos | A: texto do formato | C: observação do perfil
+  p.15  Terços e proporções                 B: 3 medidas em cm -> dominante calculado | C: interpretação
+  p.16  Lado dominante + sobrancelha        B: lado | C: orientação de sobrancelha
+  p.17-19 Cabelo: corte / cor / finalização C (três textos) + fotos de referência
+  p.20  Maquiagem de visagismo              A por formato de rosto + C
+  p.21  Acessórios (brincos, colares)       A por formato + C
+  p.22  Decotes                             A por formato
+  p.23-24 Óculos: modelos e cor da armação  A por formato + regra por contraste (automática)
+BLOCO 3  TIPOLOGIA FÍSICA (p.25-31)
+  p.26  Medidas + biotipo                   B: ombro/busto/cintura/quadril -> biotipo sugerido (regra ou ML)
+  p.27  Proporção tronco x pernas           B: medidas | C: frase de interpretação
+  p.28  Estratégia de proporção             A por biotipo
+  p.29  Régua de proporção corporal         B: foto da cliente + marcações (brinco, decote, cinto, blazer, saias, calças)
+  p.30  "Sobre o corpo X"                   A por biotipo (tecidos, estampas, volumes)
+  p.31  Pontos de atenção (ex. canelas)     B: selecionar pontos de uma lista | A: dicas por ponto
+BLOCO 4  COLORAÇÃO PESSOAL (p.32-65)
+  p.32  Diagnóstico da cartela              B: cartela (12 estações) + fotos do teste
+  p.33  Moodboard da cartela                A (imagem por cartela)
+  p.34  Cores universais                    A (igual para todas)
+  p.35  Como combinar                       A por cartela
+  p.36-37 Cores para evitar / abusar        A por cartela
+  p.38-42 Círculo cromático e harmonias     A por cartela
+  p.43-50 Inspirações de looks por cor      A por cartela (banco de imagens)
+  p.51-53 Estampas e animal print           A por cartela + ajuste pelo contraste
+  p.54-55 Metais e pedras                   A por cartela
+  p.56-61 Maquiagem: blush, batom, sombra,
+          rosto, esmaltes (com produtos)    A por cartela (catálogo de produtos)
+BLOCO 5  Encerramento (p.62-65)             A: contatos da consultora
+```
 
-## Etapa 2 — Investigar (semana 10)
+## 3. Como a consultora vai usar o sistema
 
-- **Modelo preditivo**: classificação da **cartela de coloração pessoal** (12 estações → agrupadas em 4–6 classes para ter volume por classe), a partir de contraste, subtom de pele, profundidade de cabelo e olhos. Justificativa para a rubrica: é a tarefa que mais consome tempo de análise, tem alvo categórico claro e conecta diretamente à seção principal do dossiê. Alvo secundário se sobrar tempo: previsão de tempo de preparo do dossiê (regressão).
-  - Treino com scikit-learn, comparação de 2–3 algoritmos, matriz de confusão, métricas por classe.
-- **Agentes** (mínimo 2 tarefas além de responder perguntas) — planejados 3:
-  - *Agente de Dados*: consulta DuckDB (histórico da cliente, medidas, estatísticas).
-  - *Agente de Conhecimento*: busca RAG nos manuais e fundamenta recomendações.
-  - *Agente Redator*: monta o rascunho do dossiê seção por seção, combinando diagnóstico + ML + RAG.
-- **Observabilidade**: Langfuse instrumentando todas as chamadas de LLM (latência, custo, traces de ferramentas).
-- **Testes**: golden dataset com ~30 perguntas do domínio + suite DeepEval (faithfulness e answer relevancy), com análise dos pontos fracos.
-- **Relatório técnico** (700–1500 palavras) cobrindo dataset, modelo, agentes, observabilidade e testes.
+```text
+[Cadastro da cliente] -> [Ficha da sessão em 4 abas] -> [Rascunho automático] -> [Revisão] -> [PDF final]
+                          Temperamento                   A preenchido sozinho     edita os
+                          Visagismo                      B inserido nos lugares   textos C e
+                          Tipologia                      C sugerido pela IA       aprova
+                          Coloração
+```
 
-## Etapa 3 — Agir (semana 13)
+**Área da consultora (backoffice)** com duas partes:
 
-- **Segurança**: mascaramento de dados pessoais das clientes, guardrails contra prompt injection e contra o sistema emitir diagnóstico sem revisão humana, controle de acesso da consultora.
-- **Publicação**: Streamlit Community Cloud (ou Hugging Face Spaces) com secrets em variáveis de ambiente; o app vitrine publicado pelo Lovable.
-- **Exportação do dossiê em PDF** com o layout do arquivo de referência (capa, seções de Visagismo, Tipologia Física, Coloração Pessoal, moodboards e inspirações).
-- **Documentação**: README completo, arquitetura, instruções de execução, vídeo/demonstração.
-- **Reflexão crítica**: Parte A (o sistema resolve o desafio?), Parte B (o que funciona e o que não funciona, tecnicamente), Parte C (visão de futuro).
+1. **Biblioteca** (preenchida uma vez, evolui com o tempo): textos por temperamento (4), formato de rosto (~7), biotipo (~5), cartela (12), pontos de atenção, catálogo de produtos de maquiagem, banco de imagens de looks/moodboards. É também a **base do RAG**.
+2. **Atendimentos**: a ficha de cada cliente, seguindo a mesma ordem do dossiê.
+
+**Tipos de entrada** usados na ficha, para ser rápido na sessão:
+
+- Seleção única (temperamento, formato de rosto, biotipo, cartela, lado dominante)
+- Controles deslizantes (as 5 barras de temperamento em %, notas de contraste 1–10)
+- Campos numéricos (medidas corporais, terços em cm) com cálculos automáticos
+- Lista de marcar (pontos de atenção do corpo)
+- Upload de fotos (rosto, perfil, corpo, teste de coloração)
+- Texto livre com botão "sugerir com IA" (todas as análises tipo C)
+
+Cada campo mostra ao lado **em qual página do dossiê ele aparece**, para a consultora ver o dossiê se formando.
+
+## 4. Onde entra a IA (depois do básico funcionar)
+
+| Camada | Uso no dossiê | Exigência da disciplina |
+|---|---|---|
+| Regras/cálculos | Pontuação de contraste, terço dominante, cor da armação | — |
+| **ML** | Sugerir biotipo a partir das medidas e cartela a partir das notas de coloração | Etapa 2 — modelo preditivo |
+| **RAG** | Busca na biblioteca para fundamentar os textos C | Etapa 1 — ChromaDB |
+| **LLM** | Escrever rascunhos C (cabelo, sobrancelha, interpretação de terços) no tom da consultora | Etapa 1 — LLM + system prompt |
+| **Agentes** | Agente Ficha (consulta dados), Agente Biblioteca (RAG), Agente Redator (monta o dossiê) | Etapa 2 |
+| Revisão humana | Nada sai sem aprovação da consultora | Etapa 3 — segurança/guardrails |
+
+## 5. Encaixe nas 3 etapas
+
+- **Etapa 1 (sem. 6)** — Biblioteca de conteúdo (docs no ChromaDB), ficha da sessão (tabelas no DuckDB: clientes, sessões, temperamento, visagismo, medidas, coloração), chat RAG e rascunho C por LLM, montagem do dossiê em tela.
+- **Etapa 2 (sem. 10)** — ML de biotipo/cartela com ~400 clientes sintéticos, 3 agentes, Langfuse, DeepEval.
+- **Etapa 3 (sem. 13)** — PDF final no layout HH, segurança, publicação, documentação e reflexão.
+
+## 6. Perguntas para a consultora (antes de construir)
+
+1. Quais são os outros pacotes e quais blocos cada um inclui? (Assim a ficha liga/desliga blocos por pacote.)
+2. Os textos fixos (tipo A) já existem em algum arquivo (Canva, Word)? Aproveitá-los adianta muito a biblioteca.
+3. Onde ela monta hoje o dossiê (Canva?) — define se o PDF final copia o layout ou se exportamos para a ferramenta dela.
+4. Quais informações ela coleta antes da sessão (questionário de temperamento?) — pode virar um formulário que a própria cliente preenche.
+5. As imagens de looks e produtos são dela ou de terceiros? (Direitos de uso na versão pública.)
 
 ## Detalhes técnicos
 
-**Entrega acadêmica (Python)** — `streamlit`, `duckdb`, `chromadb`, `scikit-learn`, `pandas`, `langfuse`, `deepeval`, `reportlab` (PDF), `python-dotenv`. Estrutura: `app/` (páginas Streamlit), `data/` (CSVs), `docs/` (fontes do RAG), `src/` (rag, agents, ml, db), `tests/`.
-
-**Vitrine (Lovable)** — TanStack Start + React + Tailwind. Landing do produto, demonstração navegável do fluxo (formulário → diagnóstico sugerido → rascunho do dossiê) e visualização do dossiê no estilo da referência. Se quisermos que a vitrine seja funcional de verdade, ativamos Lovable Cloud para banco e busca vetorial; caso contrário ela roda com dados de exemplo.
-
-## Sequência sugerida de trabalho
-
-1. Gerador de dados sintéticos + os 5 documentos-base do RAG (fundação das 3 etapas).
-2. Etapa 1: DuckDB + ChromaDB + RAG + Streamlit + system prompt.
-3. Etapa 2: ML, agentes, Langfuse, DeepEval, relatório.
-4. Etapa 3: segurança, export PDF, deploy, documentação e reflexão.
-5. Vitrine no Lovable em paralelo, após a Etapa 1 estabilizar o fluxo.
-
-## Fora deste plano por enquanto
-
-- Análise automática de fotos do rosto (visão computacional) — fica como "visão de futuro" na Etapa 3.
-- Integração com agenda/pagamentos.
+- **Modelo de dados** (idêntico no DuckDB acadêmico e no banco do app web): `clientes`, `sessoes` (pacote, status), `temperamento` (primário, secundário, 5 percentuais), `visagismo` (contraste pele/cabelo/olhos, formato, terços, lado, textos C), `medidas` (ombro, busto, cintura, quadril, tronco, pernas, biotipo), `coloracao` (cartela), `pontos_atencao`, `textos_gerados` (seção, rascunho IA, versão aprovada), `biblioteca` (categoria, chave, seção, texto, imagens).
+- **Montagem**: cada página do dossiê vira um "modelo de seção" que recebe dados B, busca A na biblioteca pela chave (ex.: `cartela=outono_suave`, `secao=batons`) e insere C aprovado.
+- **Streamlit** replica o fluxo com a mesma estrutura, para cumprir a rubrica (DuckDB + ChromaDB + LLM + RAG).
