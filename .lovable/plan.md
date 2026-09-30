@@ -120,6 +120,14 @@ Analisamos 3 dossiês Pacote 1 (Gizeli, Janine, Adriana) e 1 Pacote Completo Mas
 - **Encerramento fixo:** "Desejo sucesso com suas descobertas!" + contatos, às vezes com uma citação de moda (ex.: Coco Chanel) — citação pode ser escolhida de uma lista.
 - **Nada novo que mude a estrutura:** as páginas finais confirmam o modelo A/B/C e a organização em blocos; as únicas adições são as seções opcionais acima.
 
+**Lote 1 — Apostilas de Coloração Pessoal (método Studio Immagine, de Luciana Ulrich, formadora da Helô):**
+
+- **Roteiro do teste confirmado de ponta a ponta:** primeiro o contraste da pele (graduação de cinza 1–10; diferença de 1–3 graus = baixo, 4–5 = médio, 6+ = alto; fases claro/escuro e estampados), depois o TIP — Temperatura (fase 1, subtom e kit dos vermelhos: quente, neutra quente, neutra fria, fria), Intensidade (suave → brilhante, 5 níveis) e Profundidade (clara → escura, 5 níveis) — e por fim o kit das 12 estações. É exatamente essa sequência que a aba de coloração da ficha vai seguir.
+- **Cada estação tem um TIP oficial** (Verão: fria/suave/clara; Outono: quente/suave/escura; Inverno: fria/brilhante/escura; Primavera: quente/brilhante/clara) mais recomendação de metais. Isso dá rótulos perfeitos para o **ML**: o modelo aprende a mapear as respostas do teste (TIP + contraste) na estação.
+- **Regras de ouro do método:** repetir os pigmentos da cliente (harmonia) e analisar sempre por comparação, nunca uma cor isolada. Entra no system prompt da IA.
+- **Conteúdo fixo para a biblioteca:** leitura dos tons de cabelo (base e nuances), guia de makes por estação, psicologia das cores, harmonias cromáticas (monocromático, análoga, complementar, tríade).
+- **Direitos:** material da Studio Immagine — usar como conhecimento interno do sistema, sem reproduzir trechos longos na versão pública.
+
 ## 4. Como a consultora vai usar o sistema
 
 ```text
