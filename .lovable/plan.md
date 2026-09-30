@@ -134,6 +134,7 @@ Analisamos 3 dossiês Pacote 1 (Gizeli, Janine, Adriana) e 1 Pacote Completo Mas
 
 1. **Biblioteca** (preenchida uma vez, evolui com o tempo): textos por temperamento (4), formato de rosto (~7), biotipo (~5), cartela (12), pontos de atenção, catálogo de produtos de maquiagem, banco de imagens de looks/moodboards. É também a **base do RAG**.
 2. **Atendimentos**: a ficha de cada cliente, seguindo a mesma ordem do dossiê.
+3. **Perfil da consultoria** (cadastro da consultora): nome, marca, contatos e tom de voz. O sistema é uma **base genérica**: qualquer consultor(a) se cadastra e o app assume a identidade dela (capa, contatos e a "voz" que a IA usa nos rascunhos). A Helô é o primeiro perfil; os textos da biblioteca começam com o conteúdo dela e cada consultora pode adaptar.
 
 **Tipos de entrada** usados na ficha, para ser rápido na sessão:
 
