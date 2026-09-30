@@ -165,6 +165,9 @@ Analisamos 3 dossiês Pacote 1 (Gizeli, Janine, Adriana) e 1 Pacote Completo Mas
 2. **Apostilas do método** — fundamentam os rascunhos da IA.
 3. **Referências complementares** — outras publicações que não geram páginas, mas respondem consultas da consultora no chat e apoiam os agentes (peso menor na busca, sempre com a fonte citada).
 
+**Referências complementares recebidas (nível 3):**
+- **Grupo 1:** "Técnicas de Maquiagem, Visagismo e Imagem Pessoal" (livro de graduação UniCesumar) — maquiagem corretiva e por formato de rosto, apoia as páginas de maquiagem e os rascunhos; "Beleza Leve — O visagismo aplicado ao autoconhecimento" (Luci Fagundes Maciel) — temperamento, identidade e estilo, reforça o bloco Temperamento e o tom acolhedor da persona; "Aula de Styling 2024" (Centro Europeu) — elementos de design, cores que comunicam, regra de 2 cores por look e truques de styling, apoia o guia de estilo e as dicas de composição.
+
 ## 4. Como a consultora vai usar o sistema
 
 ```text
