@@ -211,9 +211,26 @@ Cada campo mostra ao lado **em qual página do dossiê ele aparece**, para a con
 
 ## 6. Encaixe nas 3 etapas
 
-- **Etapa 1 (sem. 6)** — Biblioteca de conteúdo (docs no ChromaDB), ficha da sessão (tabelas no DuckDB: clientes, sessões, temperamento, visagismo, medidas, coloração), chat RAG e rascunho C por LLM, montagem do dossiê em tela.
-- **Etapa 2 (sem. 10)** — ML de biotipo/cartela com ~400 clientes sintéticos, 3 agentes, Langfuse, DeepEval.
-- **Etapa 3 (sem. 13)** — PDF final no layout HH, segurança, publicação, documentação e reflexão.
+- **Etapa 1 (sem. 6)** — ver checklist abaixo.
+- **Etapa 2 (sem. 10)** — ML de cartela com ~400 clientes sintéticos, 3 agentes, Langfuse, DeepEval.
+- **Etapa 3 (sem. 13)** — PDF final no layout guia, segurança, publicação, documentação e reflexão.
+
+### Etapa 1 — o que a orientação exige x o que vamos entregar
+
+Rubrica: 30% declaração CBL + justificativa; 70% sistema funcional (chat com streaming, session state, UX writing do domínio, system prompt específico, DuckDB com 2+ tabelas relacionadas consultáveis em linguagem natural, ChromaDB com 3+ documentos bem fatiados, RAG respondendo, chaves no .env). Nota zero se: não executa, cópia integral ou chave exposta.
+
+| Exigência | Nossa entrega |
+|---|---|
+| Declaração CBL no README | Texto já pronto; justificativa escrita por você |
+| App Streamlit com chat, streaming e session state | Copiloto da consultora: aba Chat + aba Ficha da sessão |
+| CSVs 2+ tabelas relacionadas no DuckDB | consultoras, clientes, sessoes, medidas, teste_coloracao, coloracao (fictícios) |
+| Consulta em linguagem natural (Text-to-SQL, visto na Unidade 2) | "Quantas clientes são Inverno Frio?", "Medidas da Cliente A" |
+| 3+ documentos no ChromaDB (txtai/LangChain, Unidade 3) | Biblioteca A escrita por nós (temperamentos, rostos, biotipos, 12 estações) + resumos próprios das apostilas |
+| System prompt do domínio | Persona "copiloto de consultoria de imagem", tom da consultora, nunca decide sozinho |
+| .env.example, .gitignore, requirements.txt | Incluídos |
+| Vídeo 3–5 min | Roteiro: 3 perguntas RAG + 2 consultas ao banco + rascunho de um texto C + aprendizados |
+
+Fica para depois: PDF final, agentes, ML, fotos.
 
 ## 7. Perguntas para a consultora (antes de construir)
 
