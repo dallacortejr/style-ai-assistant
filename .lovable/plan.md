@@ -2,6 +2,8 @@
 
 Ponto de partida: o **dossiê final (Pacote 1, 65 páginas)**. Primeiro entendemos cada página, depois definimos como a consultora alimenta cada uma, e só então colocamos a IA por cima. Abordagem híbrida mantida: Streamlit (entrega acadêmica) + app web no Lovable (produto que a consultora usa). Dados de clientes fictícios.
 
+**Regra de referência:** o Pacote 1 enviado agora é o **dossiê-base canônico** — estrutura, cores, fontes e formatação seguem sempre ele. Os próximos dossiês (masculinos e de outras clientes) servem apenas para extrair padrões de conteúdo e variações dos tipos A/B/C; em qualquer divergência de layout ou formatação, vale o Pacote 1. Dados pessoais reais desses arquivos ficam só como referência no chat — nada entra no app, que usa exemplos fictícios.
+
 ## 1. A grande descoberta do dossiê
 
 Lendo as 65 páginas, fica claro que todo o conteúdo do dossiê pertence a um de três tipos. Separar esses três tipos é o que torna a automação possível, porque cada um é resolvido de um jeito diferente.
