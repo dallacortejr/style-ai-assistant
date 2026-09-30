@@ -256,6 +256,7 @@ Chaves só no .env (local) e no painel "Secrets" do Streamlit Cloud; o .env.exam
 
 ### Ordem de trabalho da Etapa 1
 
+0. Apresentação do plano em PowerPoint (.pptx, cerca de 12 slides): desafio CBL, o dossiê de trás para frente (tipos A/B/C), mapa do dossiê, base de conhecimento, como a consultora usa o sistema, onde entra a IA, ferramentas gratuitas, as 3 etapas e o cronograma da Etapa 1. Paleta inspirada nas cores do dossiê guia, sem dados reais de clientes.
 1. Resumos temáticos das apostilas (base do RAG) + textos fixos da biblioteca.
 2. CSVs fictícios (consultoras, clientes, sessões, medidas, teste de coloração, coloração) e carga no DuckDB.
 3. Indexação no ChromaDB e pipeline RAG com Gemini.
