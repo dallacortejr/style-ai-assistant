@@ -128,6 +128,16 @@ Analisamos 3 dossiês Pacote 1 (Gizeli, Janine, Adriana) e 1 Pacote Completo Mas
 - **Conteúdo fixo para a biblioteca:** leitura dos tons de cabelo (base e nuances), guia de makes por estação, psicologia das cores, harmonias cromáticas (monocromático, análoga, complementar, tríade).
 - **Direitos:** material da Studio Immagine — usar como conhecimento interno do sistema, sem reproduzir trechos longos na versão pública.
 
+**Lote 2 — Visagismo (Apostila 1 do curso de especialização, Apostila 2 Senac e o livro "Visagismo Integrado", de Philip Hallawell):**
+
+- **Base teórica do bloco Visagismo e do Temperamento:** o método liga linhas e formas (reta, curva, horizontal, vertical, diagonal) aos 4 temperamentos — sanguíneo, colérico, melancólico, fleumático. Isso explica por que o dossiê abre com temperamento e depois usa o rosto: o rosto "revela" o temperamento e o corte/maquiagem reforçam ou equilibram a imagem desejada.
+- **Formatos de rosto confirmados para a biblioteca:** oval, redondo, quadrado, retangular, triangular, triangular invertido, hexagonal (e variações de base). Cada formato ganha texto A com a leitura do temperamento que ele transmite.
+- **Partes do rosto e proporções:** terços, lado dominante, sobrancelhas, olhos, boca — dão as regras que a IA usa para rascunhar os textos C (sobrancelha, corte, interpretação dos terços).
+- **Princípio "a forma segue a função":** primeiro entender o que a cliente quer transmitir, depois criar a imagem — vira pergunta da ficha ("imagem desejada") e regra do system prompt.
+- **Análise da pele de Hallawell** (tipos com nomes próprios, cor de base e temperatura) complementa a coloração; entra como referência, sem substituir o método sazonal já usado pela consultora.
+- **Aplicações extras** (corpo, postura, odontologia etc.) ficam fora do escopo do dossiê.
+- **Direitos:** o livro é publicado — conhecimento interno para o RAG, sem reproduzir trechos longos na versão pública.
+
 ## 4. Como a consultora vai usar o sistema
 
 ```text
