@@ -1,6 +1,6 @@
 # Roadmap — Etapa 1
 
-- [ ] 0. Apresentação do plano em PPTX
+- [x] 0. Apresentação do plano em PPTX
 - [ ] 1. Resumos temáticos das apostilas + biblioteca
 - [ ] 2. CSVs fictícios + DuckDB
 - [ ] 3. ChromaDB + RAG (Gemini)
