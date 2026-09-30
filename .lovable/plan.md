@@ -4,13 +4,53 @@ Ponto de partida: o **dossiê final (Pacote 1, 65 páginas)**. Primeiro entendem
 
 ## 1. A grande descoberta do dossiê
 
-Cada página mistura três tipos de conteúdo. Separá-los é o que torna a automação possível:
+Lendo as 65 páginas, fica claro que todo o conteúdo do dossiê pertence a um de três tipos. Separar esses três tipos é o que torna a automação possível, porque cada um é resolvido de um jeito diferente.
 
-| Tipo | O que é | Exemplo no dossiê | Quem produz |
+### Tipo A — Conteúdo fixo por categoria
+
+**O que é:** textos e imagens que dependem só do *resultado* do diagnóstico, não da pessoa. Duas clientes com a mesma cartela Outono Suave recebem exatamente as mesmas páginas de cores, looks, estampas, metais, pedras e maquiagem.
+
+**Exemplos reais no dossiê:**
+- Temperamento Fleumático: "O fleumático é o tipo mais tranquilo, estável e racional…", com listas de características positivas, negativas e físicas (p.4–6). O mesmo vale para o Melancólico (p.8–9).
+- Rosto Oval: "caracterizado por linhas curvas no contorno do rosto e perfil…" (p.13), e as regras de óculos, decotes e acessórios para esse formato.
+- Corpo Ampulheta: "Sobre o corpo ampulheta", com tecidos indicados (algodão, seda, linho, jersey) e estampas (p.30).
+- Cartela Outono Suave: moodboard, cores para abusar e evitar, harmonias no círculo cromático, looks por cor, estampas, metais foscos, pedras (granada, malaquita) e a lista de produtos de maquiagem com marca e nome (p.32–61).
+
+**Como o sistema resolve:** a consultora escreve cada texto **uma única vez** numa biblioteca, organizado por categoria (4 temperamentos, cerca de 7 formatos de rosto, 5 biotipos, 12 cartelas). Quando ela escolhe "Outono Suave" na ficha, todas essas páginas entram sozinhas no dossiê. Essa biblioteca também vira a base de conhecimento que a IA consulta.
+
+### Tipo B — Dados da cliente
+
+**O que é:** números, notas e escolhas que a consultora registra durante a sessão. São curtos, mas mudam de cliente para cliente e alimentam cálculos.
+
+**Exemplos reais no dossiê:**
+- Medidas corporais: ombro 94, busto 85, cintura 69, quadril 91 cm (p.26), a partir das quais se chega ao biotipo Ampulheta.
+- Terços do rosto: superior 8 cm, médio 6 cm, inferior 7,5 cm (p.15), indicando o terço dominante.
+- Contraste: pele nota 4, cabelo nota 7, resultando em "médio para baixo contraste" (p.11).
+- Percentuais de temperamento: Pensar 80%, Sentir 30%, Agir 20%, Comunicar 40%, Determinar 60% (p.3).
+- Escolhas diretas: temperamento primário e secundário, formato de rosto, lado dominante (direito), cartela.
+- Fotos: rosto, perfil, corpo inteiro para a régua de proporções, teste de coloração.
+
+**Como o sistema resolve:** uma ficha de entrada rápida (campos numéricos, seleções, controles deslizantes, upload de fotos). O sistema faz os cálculos sozinho — pontuação de contraste, terço dominante, sugestão de biotipo — e coloca cada dado no lugar certo da página.
+
+### Tipo C — Análise personalizada
+
+**O que é:** o olhar profissional da consultora sobre *aquela* cliente específica. É a parte que mais exige conhecimento e que hoje é escrita do zero a cada dossiê.
+
+**Exemplos reais no dossiê:**
+- Cabelo: "O corte ideal é de comprimento médio, com movimento e leve repicado nas laterais a partir do queixo. Uma franja longa, na altura das têmporas…" e a cor das mechas em "loiro médio quente" (p.17–19).
+- Sobrancelha: "Ambas estão corretas no comprimento porém no limite… na base interna, sempre reforçar com um pouco de sombra" (p.16).
+- Interpretação dos terços: "O terço médio é o de menor proporção, e aliado aos olhos cerrados, mostra um afastamento das emoções…" (p.15).
+- Pontos de atenção do corpo: "Para disfarçar canelas grossas: evitar roupas justas, usar calças retas e soltas…" (p.31).
+
+**Como o sistema resolve:** hoje isso é 100% manual. No sistema, a IA lê os dados tipo B da cliente, consulta a biblioteca tipo A e **escreve um rascunho** no estilo da consultora. Ela lê, ajusta o que quiser e aprova. A decisão final continua sendo sempre dela.
+
+### Resumo
+
+| Tipo | Quem produz | Com que frequência | Solução no sistema |
 |---|---|---|---|
-| **A. Conteúdo fixo por categoria** | Texto que se repete para toda cliente com o mesmo resultado | Descrição do temperamento Fleumático; tudo sobre a cartela Outono Suave; "Sobre o corpo Ampulheta" | Biblioteca da consultora (escrita uma vez) |
-| **B. Dados da cliente** | Medidas, notas, escolhas | Ombro 94 / Busto 85 / Cintura 69 / Quadril 91; terços 8 / 6 / 7,5 cm; contraste pele 4, cabelo 7 | Consultora digita na sessão |
-| **C. Análise personalizada** | Texto escrito para aquela cliente | Recomendação de corte e franja; sobrancelha; "canelas grossas" | Hoje manual — aqui entra a IA como rascunho |
+| A. Fixo por categoria | Consultora | Uma vez, reaproveitado sempre | Biblioteca + preenchimento automático |
+| B. Dados da cliente | Consultora na sessão | A cada atendimento, poucos minutos | Ficha de entrada + cálculos automáticos |
+| C. Análise personalizada | Consultora (hoje) / IA como rascunho | A cada atendimento, parte mais demorada | Rascunho por IA + revisão e aprovação |
 
 Estimativa: cerca de 70% do dossiê é tipo A, 15% tipo B e 15% tipo C. Ou seja: só com uma boa biblioteca e uma ficha de entrada já se elimina a maior parte do trabalho manual, **antes mesmo da IA**.
 
