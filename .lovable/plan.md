@@ -232,6 +232,21 @@ Rubrica: 30% declaração CBL + justificativa; 70% sistema funcional (chat com s
 
 Fica para depois: PDF final, agentes, ML, fotos.
 
+### Ferramentas: tudo gratuito, com código e dados na nuvem
+
+| Parte | Escolha gratuita | Observação |
+|---|---|---|
+| Código | GitHub (repositório público, sem chaves) | Também serve como entrega da Etapa 1 |
+| App | Streamlit Community Cloud | Publica direto do GitHub, sem custo; resolve a publicação da Etapa 3 |
+| LLM | Gemini API (cota gratuita do Google AI Studio) | As assinaturas ChatGPT Pro e Gemini pago não dão acesso à API; a chave gratuita do AI Studio dá |
+| Embeddings | Modelo local gratuito (sentence-transformers multilíngue) | Sem custo e sem limite de uso; roda também no Streamlit Cloud |
+| Banco estruturado | DuckDB (arquivo .duckdb gerado a partir dos CSVs do repositório) | Fica junto com o app |
+| Base vetorial | ChromaDB persistido em pasta do repositório | Indexado uma vez, lido pelo app |
+| Observabilidade (Etapa 2) | Langfuse Cloud, plano gratuito | |
+| Uso local | Ollama / LM Studio como alternativa de LLM offline; Codex e ChatGPT como apoio para escrever código | Um seletor no .env troca entre Gemini e Ollama |
+
+Chaves só no .env (local) e no painel "Secrets" do Streamlit Cloud; o .env.example vai sem valores.
+
 ## 7. Perguntas para a consultora (antes de construir)
 
 1. Já vimos dois formatos — Pacote 1 (análise) e Pacote Completo (análise + guia de estilo). Faltam: existem outros pacotes intermediários e qual a ordem exata dos blocos em cada um?
