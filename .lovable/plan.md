@@ -247,6 +247,22 @@ Fica para depois: PDF final, agentes, ML, fotos.
 
 Chaves só no .env (local) e no painel "Secrets" do Streamlit Cloud; o .env.example vai sem valores.
 
+### Decisões da Etapa 1 (respondidas)
+
+- **Escopo:** chat + ficha da sessão + rascunho de texto pela IA (não só o chat).
+- **Demonstração:** você mesmo apresenta e usa o app no vídeo, com clientes fictícias.
+- **Repositório:** público no GitHub (publicação gratuita no Streamlit Cloud).
+- **Base de consulta:** nenhuma apostila entra inteira. Primeiro passo da implementação: gerar resumos próprios, um por tema (Coloração, Visagismo, Temperamento, Tipologia feminina, Tipologia masculina, Estilos universais, Maquiagem e acessórios, Styling e dress code), sem repetições e reescritos com palavras nossas, preservando o método e os termos técnicos. Esses resumos (arquivos .md) são os documentos indexados no ChromaDB, com a fonte citada em cada um. Você revisa os resumos antes de indexar.
+
+### Ordem de trabalho da Etapa 1
+
+1. Resumos temáticos das apostilas (base do RAG) + textos fixos da biblioteca.
+2. CSVs fictícios (consultoras, clientes, sessões, medidas, teste de coloração, coloração) e carga no DuckDB.
+3. Indexação no ChromaDB e pipeline RAG com Gemini.
+4. App Streamlit: chat com streaming, consulta ao banco em linguagem natural, ficha da sessão e botão "sugerir com IA".
+5. README com a declaração CBL (justificativa escrita por você), .env.example, .gitignore, requirements.txt.
+6. Publicação no Streamlit Cloud e roteiro do vídeo.
+
 ## 7. Perguntas para a consultora (antes de construir)
 
 1. Já vimos dois formatos — Pacote 1 (análise) e Pacote Completo (análise + guia de estilo). Faltam: existem outros pacotes intermediários e qual a ordem exata dos blocos em cada um?
