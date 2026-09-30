@@ -138,6 +138,13 @@ Analisamos 3 dossiês Pacote 1 (Gizeli, Janine, Adriana) e 1 Pacote Completo Mas
 - **Aplicações extras** (corpo, postura, odontologia etc.) ficam fora do escopo do dossiê.
 - **Direitos:** o livro é publicado — conhecimento interno para o RAG, sem reproduzir trechos longos na versão pública.
 
+**Lote 3 — Tipologia Física (apostila do curso):**
+
+- **Silhuetas oficiais da biblioteca:** Ideal, Ampulheta/X, Triângulo/A, Retângulo/H, Magro/I, Triângulo Invertido/Y e Oval — cada uma com texto A (características, tecidos, estampas, volumes).
+- **Método de medição com varetas** (ombro→quadril, ângulo e distância da cintura): confirma que a ficha pode sugerir o biotipo pelas medidas, com a consultora confirmando na observação.
+- **Lista de pontos de atenção pronta:** postura (ombros desalinhados/caídos, hiperlordose, cabeça projetada, hiperextensão do joelho etc.) e objetivos de proporção (parecer mais alta/baixa/magra/cheia, suavizar ombros largos...) — cada um com dicas fixas (tipo A) que alimentam a página de pontos de atenção do dossiê.
+- **Elementos e princípios de design** (linhas, forma, cor, textura, padronagem; equilíbrio, proporção, escala, ritmo, destaque, harmonia) e **coordenação de cores, estampas, linhas e texturas**: conteúdo fixo que fundamenta as estratégias de proporção e o guia de estilo — base do RAG e dos rascunhos C.
+
 ## 4. Como a consultora vai usar o sistema
 
 ```text
