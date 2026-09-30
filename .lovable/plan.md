@@ -165,6 +165,10 @@ Analisamos 3 dossiês Pacote 1 (Gizeli, Janine, Adriana) e 1 Pacote Completo Mas
 2. **Apostilas do método** — fundamentam os rascunhos da IA.
 3. **Referências complementares** — outras publicações que não geram páginas, mas respondem consultas da consultora no chat e apoiam os agentes (peso menor na busca, sempre com a fonte citada).
 
+**Referências complementares recebidas (nível 3):**
+- **Grupo 1:** "Técnicas de Maquiagem, Visagismo e Imagem Pessoal" (livro de graduação UniCesumar) — maquiagem corretiva e por formato de rosto, apoia as páginas de maquiagem e os rascunhos; "Beleza Leve — O visagismo aplicado ao autoconhecimento" (Luci Fagundes Maciel) — temperamento, identidade e estilo, reforça o bloco Temperamento e o tom acolhedor da persona; "Aula de Styling 2024" (Centro Europeu) — elementos de design, cores que comunicam, regra de 2 cores por look e truques de styling, apoia o guia de estilo e as dicas de composição.
+- **Grupo 2:** "Consultoria de Cores" — significado e psicologia de cada cor, nuances, proporções de cores no look e identidade cromática digital (cores nas redes sociais); responde perguntas do tipo "o que essa cor comunica?" e pode virar um serviço extra no futuro. "Personal Stylist — Apostila 2" — teorias da personalidade (psicodinâmica, humanista, Bandura) e como a personalidade influencia a imagem; fundamenta o bloco Temperamento. "Carolina Garcia — Imagem e Estilo" — portfólio comercial de outra consultora (serviços como análise cromática, detox de guarda-roupa, montagem de looks, personal shopper e planos de assinatura). Não entra no RAG técnico; serve como referência de mercado para o cadastro de serviços e pacotes da consultoria.
+
 ## 4. Como a consultora vai usar o sistema
 
 ```text
