@@ -160,6 +160,11 @@ Analisamos 3 dossiês Pacote 1 (Gizeli, Janine, Adriana) e 1 Pacote Completo Mas
 
 **Base de conhecimento consolidada:** coloração (método sazonal expandido), visagismo (linhas × temperamentos, formatos e partes do rosto), tipologia física (silhuetas femininas e masculinas, pontos de atenção, design), estilo masculino e estilos universais, e a referência teórica de Hallawell. Com isso a biblioteca cobre todos os blocos do dossiê.
 
+**Níveis da base de conhecimento (para o RAG e os agentes):**
+1. **Biblioteca do dossiê** — textos fixos que viram páginas (prioridade máxima).
+2. **Apostilas do método** — fundamentam os rascunhos da IA.
+3. **Referências complementares** — outras publicações que não geram páginas, mas respondem consultas da consultora no chat e apoiam os agentes (peso menor na busca, sempre com a fonte citada).
+
 ## 4. Como a consultora vai usar o sistema
 
 ```text
