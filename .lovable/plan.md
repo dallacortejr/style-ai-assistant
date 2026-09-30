@@ -109,6 +109,17 @@ Analisamos 3 dossiês Pacote 1 (Gizeli, Janine, Adriana) e 1 Pacote Completo Mas
 - **Teste de coloração estruturado:** o método sazonal expandido registra etapas — profundeza, intensidade (brilhante x suave), temperatura (fria x quente) e teste dos vermelhos — com aprovação ✅/❌ por amostra. Essa entrada estruturada alimenta o diagnóstico e depois o ML de cartela.
 - **Pacote Completo = escopo máximo:** além dos 4 blocos de análise, tem abertura (sobre o cliente, objetivos, desejo de imagem, moodboard), análise de estilo (estilo detectado → estilo desejado, mapa dos estilos) e um guia de estilo inteiro (cabelo/barba, estilo olfativo, óculos, acessórios, sapatos e cintos, uniforme, partes de cima/baixo, composição de looks, dicas, personal shopping, etiqueta, tecidos, resultados). Confirma a decisão: a ficha terá **blocos ligáveis por pacote** — Pacote 1 = análise; Pacote Completo = tudo.
 
+**Páginas finais (51 em diante) — o que acrescentam:**
+
+- **Final da coloração é quase todo tipo A por cartela:** estampas, animal print, metais, óculos por cor, pedras e maquiagem (blush, batom, sombra, rosto, esmaltes) se repetem para a mesma cartela. O que muda entre cartelas é previsível (ex.: Inverno = pratas brilhantes, fundo frio rosado, acabamento com brilho; Outono Escuro = dourados foscos, fundo quente, sem brilho).
+- **Ajuste pelo contraste (regra automática):** o texto de estampas troca só o nível de contraste da cliente ("médio para alto" x "alto"). Um mesmo texto-base com a faixa de contraste preenchida pela régua resolve.
+- **Catálogo de maquiagem = tabela de produtos:** cada item é marca + nome da cor + categoria + cartela (ex.: blush, batom, esmalte). Vira uma tabela no banco, fácil de atualizar quando um produto sai de linha — e vai para a biblioteca de conteúdo.
+- **Guia de makes por família de estação:** existe um texto por grupo (Inverno, Outono…) sobre intensidade, brilho e quantas cores usar, além da lista por cartela.
+- **Páginas opcionais (tipo C) que aparecem só em alguns dossiês:** "Guia do óculos" com avaliação de armações que a cliente já tem (formato e cor, com fotos) e página de cor de cabelo por cartela com recomendação de tonalidade. Viram **seções opcionais** que a consultora liga quando fizer sentido.
+- **Guia de estilo (Pacote Completo) mistura A e C:** dicas de styling e medidas de caimento (barra da calça, bermuda, blazer, manga) e tecidos/fibras e etiqueta são textos fixos (A); composição de looks e personal shopping (lista de compras por categoria) são específicos do cliente (C/B).
+- **Encerramento fixo:** "Desejo sucesso com suas descobertas!" + contatos, às vezes com uma citação de moda (ex.: Coco Chanel) — citação pode ser escolhida de uma lista.
+- **Nada novo que mude a estrutura:** as páginas finais confirmam o modelo A/B/C e a organização em blocos; as únicas adições são as seções opcionais acima.
+
 ## 4. Como a consultora vai usar o sistema
 
 ```text
