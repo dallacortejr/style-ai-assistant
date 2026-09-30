@@ -98,7 +98,18 @@ BLOCO 4  COLORAÇÃO PESSOAL (p.32-65)
 BLOCO 5  Encerramento (p.62-65)             A: contatos da consultora
 ```
 
-## 3. Como a consultora vai usar o sistema
+## 3. O que os outros 4 dossiês confirmaram
+
+Analisamos 3 dossiês Pacote 1 (Gizeli, Janine, Adriana) e 1 Pacote Completo Masculino, todos comparados com o Guia.
+
+- **Estrutura estável:** a ordem Temperamento → Visagismo → Tipologia → Coloração se repete nas 3 clientes do Pacote 1, e a maior parte das páginas bate página a página com o Guia. O dossiê da Janine é uma versão mais antiga (biotipo em formato diferente, pontos de atenção por área como braços e papada) — confirma que a consultora evolui o layout, e que em divergência vale o Guia.
+- **Biblioteca confirmada com valores reais:** os textos tipo A são idênticos entre clientes. Já vimos em uso: temperamentos Fleumático+Sanguíneo, Sanguíneo e Melancólico (das 4 combinações da biblioteca); rostos Oval, Retangular e Hexagonal de Base Reta/Diamante; biotipos femininos Triângulo e Ampulheta; cartelas Inverno Frio, Inverno Escuro e Outono Escuro.
+- **Contraste calculado:** a régua tem 10 posições e a consultora marca onde ficam pele e cabelo; a "graduação" é a distância entre as marcas (ex.: 5 pontos = médio para alto; 4 = médio). Cálculo automático confirmado.
+- **Biotipo por gênero:** no feminino, ombro/busto/cintura/quadril (Triângulo quando o quadril domina); no masculino, altura/peso/ombro/tórax/cintura/quadril (Trapézio quando ombro e tórax dominam). A ficha precisa de um modo masculino e um feminino.
+- **Teste de coloração estruturado:** o método sazonal expandido registra etapas — profundeza, intensidade (brilhante x suave), temperatura (fria x quente) e teste dos vermelhos — com aprovação ✅/❌ por amostra. Essa entrada estruturada alimenta o diagnóstico e depois o ML de cartela.
+- **Pacote Completo = escopo máximo:** além dos 4 blocos de análise, tem abertura (sobre o cliente, objetivos, desejo de imagem, moodboard), análise de estilo (estilo detectado → estilo desejado, mapa dos estilos) e um guia de estilo inteiro (cabelo/barba, estilo olfativo, óculos, acessórios, sapatos e cintos, uniforme, partes de cima/baixo, composição de looks, dicas, personal shopping, etiqueta, tecidos, resultados). Confirma a decisão: a ficha terá **blocos ligáveis por pacote** — Pacote 1 = análise; Pacote Completo = tudo.
+
+## 4. Como a consultora vai usar o sistema
 
 ```text
 [Cadastro da cliente] -> [Ficha da sessão em 4 abas] -> [Rascunho automático] -> [Revisão] -> [PDF final]
@@ -124,7 +135,7 @@ BLOCO 5  Encerramento (p.62-65)             A: contatos da consultora
 
 Cada campo mostra ao lado **em qual página do dossiê ele aparece**, para a consultora ver o dossiê se formando.
 
-## 4. Onde entra a IA (depois do básico funcionar)
+## 5. Onde entra a IA (depois do básico funcionar)
 
 | Camada | Uso no dossiê | Exigência da disciplina |
 |---|---|---|
@@ -135,15 +146,15 @@ Cada campo mostra ao lado **em qual página do dossiê ele aparece**, para a con
 | **Agentes** | Agente Ficha (consulta dados), Agente Biblioteca (RAG), Agente Redator (monta o dossiê) | Etapa 2 |
 | Revisão humana | Nada sai sem aprovação da consultora | Etapa 3 — segurança/guardrails |
 
-## 5. Encaixe nas 3 etapas
+## 6. Encaixe nas 3 etapas
 
 - **Etapa 1 (sem. 6)** — Biblioteca de conteúdo (docs no ChromaDB), ficha da sessão (tabelas no DuckDB: clientes, sessões, temperamento, visagismo, medidas, coloração), chat RAG e rascunho C por LLM, montagem do dossiê em tela.
 - **Etapa 2 (sem. 10)** — ML de biotipo/cartela com ~400 clientes sintéticos, 3 agentes, Langfuse, DeepEval.
 - **Etapa 3 (sem. 13)** — PDF final no layout HH, segurança, publicação, documentação e reflexão.
 
-## 6. Perguntas para a consultora (antes de construir)
+## 7. Perguntas para a consultora (antes de construir)
 
-1. Quais são os outros pacotes e quais blocos cada um inclui? (Assim a ficha liga/desliga blocos por pacote.)
+1. Já vimos dois formatos — Pacote 1 (análise) e Pacote Completo (análise + guia de estilo). Faltam: existem outros pacotes intermediários e qual a ordem exata dos blocos em cada um?
 2. Os textos fixos (tipo A) já existem em algum arquivo (Canva, Word)? Aproveitá-los adianta muito a biblioteca.
 3. Onde ela monta hoje o dossiê (Canva?) — define se o PDF final copia o layout ou se exportamos para a ferramenta dela.
 4. Quais informações ela coleta antes da sessão (questionário de temperamento?) — pode virar um formulário que a própria cliente preenche.
@@ -151,6 +162,6 @@ Cada campo mostra ao lado **em qual página do dossiê ele aparece**, para a con
 
 ## Detalhes técnicos
 
-- **Modelo de dados** (idêntico no DuckDB acadêmico e no banco do app web): `clientes`, `sessoes` (pacote, status), `temperamento` (primário, secundário, 5 percentuais), `visagismo` (contraste pele/cabelo/olhos, formato, terços, lado, textos C), `medidas` (ombro, busto, cintura, quadril, tronco, pernas, biotipo), `coloracao` (cartela), `pontos_atencao`, `textos_gerados` (seção, rascunho IA, versão aprovada), `biblioteca` (categoria, chave, seção, texto, imagens).
+- **Modelo de dados** (idêntico no DuckDB acadêmico e no banco do app web): `clientes` (com modo masculino/feminino), `sessoes` (pacote, status — blocos ligáveis por pacote), `abertura` (sobre, objetivos, desejo de imagem, moodboard — Pacote Completo), `temperamento` (primário, secundário, 5 percentuais), `visagismo` (régua de contraste com posições pele/cabelo, formato, terços, lado, sobrancelha, textos C), `medidas` (feminino: ombro, busto, cintura, quadril; masculino: altura, peso, ombro, tórax, cintura, quadril; tronco, pernas, biotipo), `teste_coloracao` (etapas profundeza, intensidade, temperatura, vermelhos — amostras ✅/❌), `coloracao` (cartela), `estilo` (detectado, desejado — Pacote Completo), `pontos_atencao`, `textos_gerados` (seção, rascunho IA, versão aprovada), `biblioteca` (categoria, chave, seção, texto, imagens — cobre também os blocos do guia de estilo).
 - **Montagem**: cada página do dossiê vira um "modelo de seção" que recebe dados B, busca A na biblioteca pela chave (ex.: `cartela=outono_suave`, `secao=batons`) e insere C aprovado.
 - **Streamlit** replica o fluxo com a mesma estrutura, para cumprir a rubrica (DuckDB + ChromaDB + LLM + RAG).
