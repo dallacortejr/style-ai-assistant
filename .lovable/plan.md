@@ -145,6 +145,21 @@ Analisamos 3 dossiês Pacote 1 (Gizeli, Janine, Adriana) e 1 Pacote Completo Mas
 - **Lista de pontos de atenção pronta:** postura (ombros desalinhados/caídos, hiperlordose, cabeça projetada, hiperextensão do joelho etc.) e objetivos de proporção (parecer mais alta/baixa/magra/cheia, suavizar ombros largos...) — cada um com dicas fixas (tipo A) que alimentam a página de pontos de atenção do dossiê.
 - **Elementos e princípios de design** (linhas, forma, cor, textura, padronagem; equilíbrio, proporção, escala, ritmo, destaque, harmonia) e **coordenação de cores, estampas, linhas e texturas**: conteúdo fixo que fundamenta as estratégias de proporção e o guia de estilo — base do RAG e dos rascunhos C.
 
+**Lote 4 — Imagem e Estilo Masculino (apostila do curso):**
+
+- **Modo masculino da ficha confirmado:** tipos físicos masculinos Retangular, Triângulo, Trapézio, Oval e Triângulo Invertido, com pontos de medição e listas "apostar / evitar" por tipo (tipo A).
+- **7 estilos universais** (Esportivo/Natural, Elegante, Tradicional, Romântico, Dramático, Sedutor, Criativo): alimentam a análise de estilo do Pacote Completo (estilo detectado → desejado) — valem para os dois gêneros.
+- **Guia de estilo masculino como biblioteca:** tipos de camisa (social, casual, esportiva), calças, sapatos (Derby, Oxford, Loafer, Monk, Brogue, Chelsea…), meias, tecidos, níveis de formalidade (baixa, média, alta), dress code corporativo e montagem de mala — textos fixos para as seções do guia de estilo.
+- **Diferença feminino × masculino:** mesmo fluxo de sessão, com biblioteca e medidas próprias por gênero.
+
+**Referência complementar — "Visagismo: Harmonia e Estética" (Philip Hallawell, Senac):**
+
+- Livro de formação de base, pouco usado no dia a dia: composição e proporção, geometria da cabeça, formatos básicos do rosto, partes do rosto, teoria e uso da cor, tipos cromáticos e processo criativo.
+- **Uso no sistema:** entra no RAG com peso menor, só como fundamentação teórica quando a IA precisar justificar uma recomendação; não gera páginas do dossiê. O arquivo é digitalizado (imagem), então precisa de leitura por OCR na preparação da base.
+- **Direitos:** livro publicado — conhecimento interno, sem reproduzir trechos na versão pública.
+
+**Base de conhecimento consolidada:** coloração (método sazonal expandido), visagismo (linhas × temperamentos, formatos e partes do rosto), tipologia física (silhuetas femininas e masculinas, pontos de atenção, design), estilo masculino e estilos universais, e a referência teórica de Hallawell. Com isso a biblioteca cobre todos os blocos do dossiê.
+
 ## 4. Como a consultora vai usar o sistema
 
 ```text
