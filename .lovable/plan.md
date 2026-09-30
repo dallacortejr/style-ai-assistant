@@ -130,7 +130,7 @@ Analisamos 3 dossiês Pacote 1 (Gizeli, Janine, Adriana) e 1 Pacote Completo Mas
                           Coloração
 ```
 
-**Área da consultora (backoffice)** com duas partes:
+**Área da consultora (backoffice)** com três partes:
 
 1. **Biblioteca** (preenchida uma vez, evolui com o tempo): textos por temperamento (4), formato de rosto (~7), biotipo (~5), cartela (12), pontos de atenção, catálogo de produtos de maquiagem, banco de imagens de looks/moodboards. É também a **base do RAG**.
 2. **Atendimentos**: a ficha de cada cliente, seguindo a mesma ordem do dossiê.
