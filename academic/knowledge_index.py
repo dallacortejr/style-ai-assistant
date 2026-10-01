@@ -7,6 +7,7 @@ Uso: python academic/knowledge_index.py --rebuild
 import argparse
 import hashlib
 import re
+import unicodedata
 from pathlib import Path
 
 
@@ -53,6 +54,13 @@ def chunks(max_words: int = 350) -> list[tuple[str, str, dict]]:
                     "secao": section, "tipo": "resumo proprio aprovado",
                 }))
     return result
+
+
+def keywords(text: str) -> set[str]:
+    normalized = unicodedata.normalize("NFKD", text.lower())
+    plain = "".join(ch for ch in normalized if not unicodedata.combining(ch))
+    stopwords = {"como", "para", "uma", "que", "qual", "quais", "pelo", "pela", "sobre", "com", "dos", "das", "ser", "seu", "sua"}
+    return {word for word in re.findall(r"[a-z]{4,}", plain) if word not in stopwords}
 
 
 class LocalEmbeddings:
@@ -106,8 +114,8 @@ def retrieve(question: str, limit: int = 4) -> list[dict]:
     col = collection()
     if col.count() == 0:
         return []
-    hits = col.query(query_texts=[question], n_results=min(limit, col.count()))
-    return [
+    hits = col.query(query_texts=[question], n_results=min(max(limit * 4, 12), col.count()))
+    candidates = [
         {"texto": document, "fonte": metadata["fonte"],
          "secao": metadata["secao"], "tema": metadata["tema"],
          "distancia": distance}
@@ -115,6 +123,13 @@ def retrieve(question: str, limit: int = 4) -> list[dict]:
             hits["documents"][0], hits["metadatas"][0], hits["distances"][0]
         )
     ]
+    query_words = keywords(question)
+    # Keep semantic recall, but prioritize precise terminology in title and body.
+    return sorted(candidates, key=lambda hit: (
+        len(query_words & keywords(hit["secao"] + " " + hit["tema"])) * 3
+        + len(query_words & keywords(hit["texto"]))
+        - hit["distancia"]
+    ), reverse=True)[:limit]
 
 
 def main() -> None:
