@@ -31,10 +31,10 @@ def main() -> None:
     TARGET.parent.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect(str(TARGET))
     try:
+        for table in reversed(SCHEMA):
+            con.execute(f"DROP TABLE IF EXISTS {table}")
         for table, columns in SCHEMA.items():
-            con.execute(f"CREATE TABLE IF NOT EXISTS {table} ({columns})")
-            # A carga pode ser executada novamente sem duplicar dados.
-            con.execute(f"DELETE FROM {table}")
+            con.execute(f"CREATE TABLE {table} ({columns})")
             path = DATA / f"{table}.csv"
             with path.open(encoding="utf-8", newline="") as file:
                 reader = csv.DictReader(file)
