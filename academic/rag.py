@@ -24,10 +24,16 @@ def api_key() -> str | None:
     return os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 
 
-def client():
-    from google import genai
+_CLIENT = None
 
-    return genai.Client(api_key=api_key())
+
+def client():
+    """Cliente único reaproveitado (um cliente temporário é fechado antes do uso)."""
+    global _CLIENT
+    if _CLIENT is None:
+        from google import genai
+        _CLIENT = genai.Client(api_key=api_key())
+    return _CLIENT
 
 
 def _context(passages: list[dict]) -> str:
