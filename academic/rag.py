@@ -20,8 +20,32 @@ Não inclua dados pessoais reais nem reproduza longos trechos de publicações.
 """
 
 
+PROVIDER = os.getenv("LLM_PROVIDER", "gemini").lower()  # "gemini" ou "ollama"
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1")
+
+
 def api_key() -> str | None:
+    """Para o Ollama local não há chave; devolve um marcador para liberar a IA."""
+    if PROVIDER == "ollama":
+        return "ollama-local"
     return os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+
+
+def _ollama(prompt: str, system: str, temperature: float, stream: bool):
+    import json
+    import requests
+
+    resp = requests.post(f"{OLLAMA_URL}/api/chat", stream=stream, timeout=None, json={
+        "model": OLLAMA_MODEL, "stream": stream,
+        "options": {"temperature": temperature},
+        "messages": [{"role": "system", "content": system},
+                     {"role": "user", "content": prompt}],
+    })
+    resp.raise_for_status()
+    if not stream:
+        return resp.json()["message"]["content"]
+    return (json.loads(line)["message"]["content"] for line in resp.iter_lines() if line)
 
 
 _CLIENT = None
@@ -62,6 +86,9 @@ def stream_answer(question: str, history: list[dict] | None = None) -> tuple[Ite
         return iter(["Trechos encontrados. Configure a chave Gemini para gerar a resposta; as fontes estão abaixo."]), passages
 
     def gen() -> Iterator[str]:
+        if PROVIDER == "ollama":
+            yield from _ollama(_contents(question, passages, history), SYSTEM_PROMPT, 0.2, True)
+            return
         for chunk in client().models.generate_content_stream(
             model=MODEL,
             contents=_contents(question, passages, history),
@@ -81,6 +108,8 @@ def answer(question: str) -> dict:
 
 def generate(prompt: str, system: str, temperature: float = 0.2) -> str:
     """Até 3 tentativas com espera crescente só para sobrecarga (429/503)."""
+    if PROVIDER == "ollama":
+        return _ollama(prompt, system, temperature, False)
     import time
     from google.genai import errors
 
