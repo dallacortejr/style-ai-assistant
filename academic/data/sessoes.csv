@@ -1,0 +1,9 @@
+sessao_id,cliente_id,data_sessao,pacote,status
+S01,CL01,2026-02-05,pacote_1,aprovado
+S02,CL02,2026-02-12,pacote_1,em_revisao
+S03,CL03,2026-03-04,pacote_1,aprovado
+S04,CL04,2026-03-18,pacote_1,rascunho
+S05,CL05,2026-04-02,pacote_1,em_revisao
+S06,CL06,2026-04-16,pacote_1,aprovado
+S07,CL07,2026-05-07,pacote_1,rascunho
+S08,CL08,2026-05-21,pacote_1,em_revisao

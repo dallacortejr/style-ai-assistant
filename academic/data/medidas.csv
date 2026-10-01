@@ -1,0 +1,9 @@
+sessao_id,altura_cm,peso_kg,ombro_cm,busto_cm,torax_cm,cintura_cm,quadril_cm,tronco_cm,pernas_cm,biotipo_confirmado
+S01,166,,96,91,,76,101,75,91,triangulo
+S02,171,,98,96,,74,99,78,93,ampulheta
+S03,181,80,111,,105,88,99,82,99,trapezio
+S04,160,,92,90,,82,94,73,87,retangulo
+S05,169,,102,94,,75,92,77,92,triangulo_invertido
+S06,175,77,107,,101,91,98,81,94,trapezio
+S07,163,,94,91,,79,99,74,89,triangulo
+S08,172,,97,95,,78,98,79,93,ampulheta

@@ -1,0 +1,9 @@
+sessao_id,primario,secundario,sanguineo_pct,colerico_pct,melancolico_pct,fleumatico_pct
+S01,fleumatico,sanguineo,30,15,15,40
+S02,sanguineo,colerico,40,30,10,20
+S03,colerico,fleumatico,20,40,10,30
+S04,melancolico,fleumatico,10,15,45,30
+S05,sanguineo,melancolico,40,15,30,15
+S06,fleumatico,melancolico,15,15,30,40
+S07,melancolico,sanguineo,30,10,45,15
+S08,colerico,sanguineo,30,40,15,15

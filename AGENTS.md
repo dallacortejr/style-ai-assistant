@@ -11,3 +11,4 @@
 
 <!-- Project decisions -->
 - Keep reusable sample media/product references separate from per-client recommendations; the consultant edits each client's selections without changing the general library, so examples never become personalized advice by default.
+- Treat academic/data CSVs as the sole reproducible synthetic demo source and regenerate DuckDB with academic/init_db.py; this prevents real client data and local database binaries entering the public repository.

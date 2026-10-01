@@ -1,0 +1,9 @@
+sessao_id,temperatura,intensidade,profundidade,vermelhos,contraste_observado
+S01,fria,media,escura,frio,alto
+S02,quente,media,escura,quente,medio
+S03,fria,media,escura,frio,alto
+S04,quente,clara,clara,quente,baixo
+S05,fria,suave,clara,frio,medio
+S06,fria,media,media,frio,alto
+S07,quente,suave,media,quente,baixo
+S08,fria,brilhante,escura,frio,alto

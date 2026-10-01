@@ -1,0 +1,9 @@
+sessao_id,formato_rosto,posicao_pele,posicao_cabelo,contraste_graus,contraste_faixa
+S01,oval,2,9,7,alto
+S02,retangular,4,8,4,medio
+S03,quadrado,3,9,6,alto
+S04,redondo,3,5,2,baixo
+S05,oval,3,7,4,medio
+S06,retangular,2,8,6,alto
+S07,hexagonal,5,7,2,baixo
+S08,triangular_invertido,2,9,7,alto
