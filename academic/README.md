@@ -38,3 +38,15 @@ GROUP BY c.cartela ORDER BY c.cartela;
 ```
 
 Campos vazios em medidas são **não aplicáveis**, não zeros (por exemplo, tórax no modo feminino). A cartela é um registro de teste e `confirmada_pelo_consultor` distingue proposta de aprovação humana. Imagens e recomendações de produtos não fazem parte deste conjunto inicial; quando adicionadas, serão exemplos gerais separados dos registros editáveis de cada atendimento.
+
+## Busca de conhecimento (Etapa 1)
+
+Os oito resumos aprovados em `knowledge/` são a única fonte do índice; apostilas e livros originais não são indexados. As seções são divididas em trechos de até 350 palavras, com nome do resumo, tema, nível e seção como referência. A busca prioriza termos precisos da pergunta além da semelhança semântica.
+
+```bash
+pip install -r academic/requirements.txt
+python academic/knowledge_index.py --rebuild
+python academic/knowledge_index.py --ask "Como avaliar o contraste pessoal?"
+```
+
+O primeiro comando de indexação baixa um modelo multilíngue gratuito e grava `academic/chroma_store/` localmente. Execute-o novamente se algum resumo for atualizado. O módulo `academic/rag.py` combina a busca com o Gemini, citando fontes; sem `GEMINI_API_KEY` (ou `GOOGLE_API_KEY`), retorna somente os trechos encontrados e avisa que a resposta ainda não foi gerada. **A geração Gemini não foi testada sem uma chave de API.** Nunca publique a chave no repositório.
