@@ -1,9 +1,12 @@
 """Perguntas fundamentadas nos resumos; LLM opcional exige chave de API própria."""
 
 import os
+from collections.abc import Iterator
 
 from knowledge_index import retrieve
 
+
+MODEL = "gemini-3.8-flash"
 
 SYSTEM_PROMPT = """Você é um copiloto de consultoria de imagem e estilo para consultores(as).
 Responda em português brasileiro, de modo cuidadoso e objetivo. Use SOMENTE os
@@ -17,23 +20,62 @@ Não inclua dados pessoais reais nem reproduza longos trechos de publicações.
 """
 
 
-def answer(question: str) -> dict:
-    passages = retrieve(question)
-    if not passages:
-        return {"resposta": "A base ainda não foi indexada ou não há trechos disponíveis.", "fontes": []}
-    sources = [{"fonte": p["fonte"], "secao": p["secao"]} for p in passages]
-    key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-    if not key:
-        return {"resposta": "Trechos encontrados. Para gerar uma resposta fundamentada, configure sua chave Gemini; as fontes recuperadas estão abaixo.", "fontes": sources, "trechos": passages}
+def api_key() -> str | None:
+    return os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+
+
+def client():
     from google import genai
 
-    context = "\n\n".join(
+    return genai.Client(api_key=api_key())
+
+
+def _context(passages: list[dict]) -> str:
+    return "\n\n".join(
         f"Fonte: {p['fonte']} | Seção: {p['secao']}\n{p['texto']}" for p in passages
     )
-    client = genai.Client(api_key=key)
-    response = client.models.generate_content(
-        model="gemini-3.8-flash",
-        contents=f"Pergunta: {question}\n\nTrechos recuperados:\n{context}",
-        config={"system_instruction": SYSTEM_PROMPT, "temperature": 0.2},
+
+
+def _contents(question: str, passages: list[dict], history: list[dict] | None) -> str:
+    previous = "\n".join(
+        f"{'Consultor(a)' if m['role'] == 'user' else 'Copiloto'}: {m['content']}"
+        for m in (history or [])[-6:]
     )
-    return {"resposta": response.text or "Não foi possível gerar uma resposta.", "fontes": sources}
+    return (
+        (f"Conversa anterior:\n{previous}\n\n" if previous else "")
+        + f"Pergunta: {question}\n\nTrechos recuperados:\n{_context(passages)}"
+    )
+
+
+def stream_answer(question: str, history: list[dict] | None = None) -> tuple[Iterator[str], list[dict]]:
+    """Retorna (gerador de texto em partes, trechos usados)."""
+    passages = retrieve(question)
+    if not passages:
+        return iter(["A base ainda não foi indexada ou não há trechos disponíveis."]), []
+    if not api_key():
+        return iter(["Trechos encontrados. Configure a chave Gemini para gerar a resposta; as fontes estão abaixo."]), passages
+
+    def gen() -> Iterator[str]:
+        for chunk in client().models.generate_content_stream(
+            model=MODEL,
+            contents=_contents(question, passages, history),
+            config={"system_instruction": SYSTEM_PROMPT, "temperature": 0.2},
+        ):
+            if chunk.text:
+                yield chunk.text
+
+    return gen(), passages
+
+
+def answer(question: str) -> dict:
+    parts, passages = stream_answer(question)
+    return {"resposta": "".join(parts),
+            "fontes": [{"fonte": p["fonte"], "secao": p["secao"]} for p in passages]}
+
+
+def generate(prompt: str, system: str, temperature: float = 0.2) -> str:
+    response = client().models.generate_content(
+        model=MODEL, contents=prompt,
+        config={"system_instruction": system, "temperature": temperature},
+    )
+    return response.text or ""
