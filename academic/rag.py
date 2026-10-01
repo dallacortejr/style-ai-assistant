@@ -80,8 +80,19 @@ def answer(question: str) -> dict:
 
 
 def generate(prompt: str, system: str, temperature: float = 0.2) -> str:
-    response = client().models.generate_content(
-        model=MODEL, contents=prompt,
-        config={"system_instruction": system, "temperature": temperature},
-    )
-    return response.text or ""
+    """Até 3 tentativas com espera crescente só para sobrecarga (429/503)."""
+    import time
+    from google.genai import errors
+
+    for attempt in range(3):
+        try:
+            response = client().models.generate_content(
+                model=MODEL, contents=prompt,
+                config={"system_instruction": system, "temperature": temperature},
+            )
+            return response.text or ""
+        except errors.APIError as exc:
+            if getattr(exc, "code", None) not in (429, 503) or attempt == 2:
+                raise
+            time.sleep(4 * 2 ** attempt)
+    return ""
