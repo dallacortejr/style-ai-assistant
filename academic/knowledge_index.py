@@ -117,7 +117,10 @@ def retrieve(question: str, limit: int = 4) -> list[dict]:
     col = collection()
     if col.count() == 0:
         return []
-    hits = col.query(query_texts=[question], n_results=min(max(limit * 4, 12), col.count()))
+    # The corpus is small (tens of chunks), so rank ALL of them: the local
+    # embedding model under-scores short table-like chunks, and capping the
+    # candidate pool made good sections disappear from the ranking entirely.
+    hits = col.query(query_texts=[question], n_results=col.count())
     candidates = [
         {"texto": document, "fonte": metadata["fonte"],
          "secao": metadata["secao"], "tema": metadata["tema"],
