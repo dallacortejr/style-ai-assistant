@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+<!-- Project decisions -->
+- Keep reusable sample media/product references separate from per-client recommendations; the consultant edits each client's selections without changing the general library, so examples never become personalized advice by default.
