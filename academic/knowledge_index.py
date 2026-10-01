@@ -60,7 +60,10 @@ def keywords(text: str) -> set[str]:
     normalized = unicodedata.normalize("NFKD", text.lower())
     plain = "".join(ch for ch in normalized if not unicodedata.combining(ch))
     stopwords = {"como", "para", "uma", "que", "qual", "quais", "pelo", "pela", "sobre", "com", "dos", "das", "ser", "seu", "sua"}
-    return {word for word in re.findall(r"[a-z]{4,}", plain) if word not in stopwords}
+    # Trim plural endings ("silhuetas" ~ "silhueta", "femininas" ~ "feminina")
+    # so singular and plural forms match each other in the reranker.
+    return {re.sub(r"s$", "", word) for word in re.findall(r"[a-z]{4,}", plain)
+            if word not in stopwords}
 
 
 class LocalEmbeddings:
