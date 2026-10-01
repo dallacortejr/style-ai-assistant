@@ -32,7 +32,7 @@ def answer(question: str) -> dict:
     )
     client = genai.Client(api_key=key)
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-3.8-flash",
         contents=f"Pergunta: {question}\n\nTrechos recuperados:\n{context}",
         config={"system_instruction": SYSTEM_PROMPT, "temperature": 0.2},
     )
