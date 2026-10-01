@@ -60,7 +60,10 @@ def keywords(text: str) -> set[str]:
     normalized = unicodedata.normalize("NFKD", text.lower())
     plain = "".join(ch for ch in normalized if not unicodedata.combining(ch))
     stopwords = {"como", "para", "uma", "que", "qual", "quais", "pelo", "pela", "sobre", "com", "dos", "das", "ser", "seu", "sua"}
-    return {word for word in re.findall(r"[a-z]{4,}", plain) if word not in stopwords}
+    # Trim plural endings ("silhuetas" ~ "silhueta", "femininas" ~ "feminina")
+    # so singular and plural forms match each other in the reranker.
+    return {re.sub(r"s$", "", word) for word in re.findall(r"[a-z]{4,}", plain)
+            if word not in stopwords}
 
 
 class LocalEmbeddings:
@@ -114,7 +117,10 @@ def retrieve(question: str, limit: int = 4) -> list[dict]:
     col = collection()
     if col.count() == 0:
         return []
-    hits = col.query(query_texts=[question], n_results=min(max(limit * 4, 12), col.count()))
+    # The corpus is small (tens of chunks), so rank ALL of them: the local
+    # embedding model under-scores short table-like chunks, and capping the
+    # candidate pool made good sections disappear from the ranking entirely.
+    hits = col.query(query_texts=[question], n_results=col.count())
     candidates = [
         {"texto": document, "fonte": metadata["fonte"],
          "secao": metadata["secao"], "tema": metadata["tema"],
