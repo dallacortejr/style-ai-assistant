@@ -30,3 +30,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Academic demo: generated databases and local secrets
+*.duckdb
+*.duckdb.wal
+academic/chroma_store/
+.env
+academic/.env
+__pycache__/
