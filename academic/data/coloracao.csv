@@ -1,0 +1,9 @@
+sessao_id,cartela,confirmada_pelo_consultor
+S01,inverno_frio,sim
+S02,outono_escuro,sim
+S03,inverno_escuro,sim
+S04,primavera_clara,nao
+S05,verao_suave,nao
+S06,inverno_frio,sim
+S07,outono_suave,nao
+S08,inverno_brilhante,nao
