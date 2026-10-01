@@ -91,10 +91,8 @@ def rebuild() -> int:
     if not items:
         raise ValueError("Não há resumos próprios para indexar.")
     client = chromadb.PersistentClient(path=str(DB_PATH))
-    try:
+    if COLLECTION in [entry.name for entry in client.list_collections()]:
         client.delete_collection(COLLECTION)
-    except ValueError:
-        pass
     col = collection()
     for start in range(0, len(items), 32):
         batch = items[start:start + 32]
