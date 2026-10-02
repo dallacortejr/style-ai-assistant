@@ -181,8 +181,17 @@ sessoes = text_to_sql.run(
 )
 
 secao("Atendimento", "Cliente e pacote contratado")
-st.markdown('<p class="chamada">Escolha a cliente, confira o pacote contratado e monte o dossiê '
-            'página por página.</p>', unsafe_allow_html=True)
+with st.expander("Reabrir pasta de uma cliente salva no computador"):
+    pasta = st.file_uploader("Arquivo da pasta (.zip)", type=["zip"], key="pasta_import")
+    if pasta and st.session_state.get("pasta_lida") != pasta.file_id:
+        try:
+            sid_lido = importar_pasta(pasta)
+            if sid_lido in set(sessoes.sessao_id):
+                st.session_state.cliente_sel = sid_lido
+            st.session_state.pasta_lida = pasta.file_id
+            st.success("Pasta reaberta: pacote, textos, aprovações e fotos restaurados.")
+        except Exception as exc:
+            st.error(f"Não consegui ler essa pasta ({type(exc).__name__}).")
 rotulo = {r.sessao_id: f"{r.identificador} · {r.data_sessao}" for r in sessoes.itertuples()}
 c1, c2 = st.columns([1, 1])
 c1.markdown('<span class="pildora-mini">Cliente em atendimento</span>', unsafe_allow_html=True)
