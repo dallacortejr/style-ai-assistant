@@ -300,7 +300,6 @@ with st.container(key="navegacao_abas"):
         coluna_aba.button(nome_aba,
                           key=f"aba_{nome_aba}",
                           type="primary" if nome_aba == st.session_state.aba_atual else "secondary",
-                          use_container_width=True,
                           on_click=_abrir_aba, args=(nome_aba,))
 aba_atual = st.session_state.aba_atual
 
