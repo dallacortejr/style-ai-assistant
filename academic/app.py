@@ -209,19 +209,10 @@ st.markdown(f'<div class="pacote"><b>{pacotes.nome(pacote)}</b><br><small>{forma
             f'{len(PAGINAS)} páginas no dossiê · status: {s.status.replace("_", " ")}<br>'
             f'O dossiê abre somente as páginas do pacote contratado.</small></div>',
             unsafe_allow_html=True)
-with st.expander("Reabrir pasta de uma cliente salva no computador"):
-    pasta = st.file_uploader("Arquivo da pasta (.zip)", type=["zip"], key="pasta_import")
-    if pasta and st.session_state.get("pasta_lida") != pasta.file_id:
-        try:
-            sid_lido = importar_pasta(pasta)
-            if sid_lido in set(sessoes.sessao_id):
-                st.session_state.cliente_sel = sid_lido
-            st.session_state.pasta_lida = pasta.file_id
-            st.success("Pasta reaberta: pacote, textos, aprovações e fotos restaurados.")
-        except Exception as exc:
-            st.error(f"Não consegui ler essa pasta ({type(exc).__name__}).")
+st.markdown('<p class="chamada">Escolha a cliente, confira o pacote contratado e monte o dossiê '
+            'página por página.</p>', unsafe_allow_html=True)
 
-# Abas em pílulas (logo abaixo do atendimento)
+# Abas em pílulas (com folga abaixo da frase, próximas da escolha da cliente)
 st.session_state.setdefault("aba_atual", "Dossiê da cliente")
 ABAS = ["Dossiê da cliente", "Metodologia", "Padrões dos casos"]
 with st.container(key="navegacao_abas"):
