@@ -10,6 +10,7 @@
 - [~] 4. App Streamlit (academic/app.py: chat com streaming, text-to-SQL, ficha + sugerir com IA) — falta teste completo quando o Gemini sair da sobrecarga (503)
 - [x] 4a. Montagem do dossiê página a página, visual editorial, perfil editável, jornada de módulos, salvar/reabrir pasta da cliente (.zip)
 - [x] 4c. Pacotes 1–9 com páginas dinâmicas + visual refinado (contraste, perfil centralizado, abas sem ícones)
+- [x] 4d. Assinatura logo abaixo da saudação e páginas selecionadas pelas pílulas, sem seletor duplicado
 - [ ] 4b. Próximos módulos de atendimento (revisão, guarda-roupa etc.) e formulário da cliente — fase futura
 - [ ] 5. README CBL, .env.example, .gitignore, requirements.txt
 - [ ] 6. Publicação Streamlit Cloud + roteiro do vídeo
