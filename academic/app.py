@@ -51,6 +51,8 @@ h1, h2, h3, h4, h5 { font-family:'Cormorant Garamond', Georgia, serif !important
                      font-weight:600 !important; letter-spacing:.2px; }
 .stApp { background:var(--papel); }
 [data-testid="stHeader"] { background:transparent; }
+/* Menos área em branco acima do primeiro bloco */
+[data-testid="stAppViewContainer"] .block-container { padding-top:.9rem; padding-bottom:2.2rem; max-width:1400px; }
 
 /* Sidebar clara em linho: todo texto escuro, sem branco sobre branco */
 section[data-testid="stSidebar"] { background:var(--linho); border-right:1px solid var(--linha); }
@@ -75,12 +77,21 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] { background:var(--p
 .stButton button[kind="primary"] p, .stDownloadButton button[kind="primary"] p { color:var(--papel); }
 .stButton button[kind="primary"]:hover { background:var(--terracota); border-color:var(--terracota); color:var(--papel); }
 
-/* Abas tipográficas */
-.stTabs [data-baseweb="tab-list"] { gap:28px; border-bottom:1px solid var(--linha); }
-.stTabs [data-baseweb="tab"] { font-family:'Cormorant Garamond', serif; font-size:1.25rem; padding:6px 0; }
-.stTabs [data-baseweb="tab"] p { font-family:'Cormorant Garamond', serif; font-size:1.25rem; }
-.stTabs [aria-selected="true"] p { color:var(--terracota); }
-.stTabs [data-baseweb="tab-highlight"] { background:var(--terracota); }
+/* Navegação por pílulas (abas principais e páginas do dossiê): terracota; a aberta fica grafite. */
+.st-key-navegacao_abas .stButton button, .st-key-navegacao_paginas .stButton button { width:100%; min-height:46px; height:auto;
+    white-space:normal; line-height:1.25; text-align:center; padding:8px 12px; background:var(--terracota); border:1px solid var(--terracota); }
+.st-key-navegacao_abas .stButton button p, .st-key-navegacao_paginas .stButton button p {
+    white-space:normal; overflow:visible; text-overflow:clip; height:auto; line-height:1.25; }
+.st-key-navegacao_abas .stButton button, .st-key-navegacao_abas .stButton button p,
+.st-key-navegacao_paginas .stButton button, .st-key-navegacao_paginas .stButton button p { color:var(--papel); }
+.st-key-navegacao_abas .stButton button:hover, .st-key-navegacao_paginas .stButton button:hover {
+    background:var(--grafite); border-color:var(--grafite); color:var(--papel); }
+.st-key-navegacao_abas .stButton button:hover p, .st-key-navegacao_paginas .stButton button:hover p { color:var(--papel); }
+.st-key-navegacao_abas .stButton button[kind="primary"], .st-key-navegacao_paginas .stButton button[kind="primary"] {
+    background:var(--grafite); border-color:var(--grafite); }
+.st-key-navegacao_abas .stButton button[kind="primary"]:hover, .st-key-navegacao_paginas .stButton button[kind="primary"]:hover {
+    background:var(--grafite); border-color:var(--grafite); }
+.st-key-navegacao_abas .stButton button { font-family:'Cormorant Garamond', serif; font-size:1.2rem; padding:6px 12px; }
 
 /* Blocos editoriais */
 .hero { padding:30px 40px 26px; background:var(--linho); border-radius:6px; margin-bottom:6px; }
