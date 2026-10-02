@@ -51,6 +51,8 @@ h1, h2, h3, h4, h5 { font-family:'Cormorant Garamond', Georgia, serif !important
                      font-weight:600 !important; letter-spacing:.2px; }
 .stApp { background:var(--papel); }
 [data-testid="stHeader"] { background:transparent; }
+/* Menos área em branco acima do primeiro bloco */
+[data-testid="stAppViewContainer"] .block-container { padding-top:.9rem; padding-bottom:2.2rem; max-width:1400px; }
 
 /* Sidebar clara em linho: todo texto escuro, sem branco sobre branco */
 section[data-testid="stSidebar"] { background:var(--linho); border-right:1px solid var(--linha); }
@@ -75,12 +77,21 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] { background:var(--p
 .stButton button[kind="primary"] p, .stDownloadButton button[kind="primary"] p { color:var(--papel); }
 .stButton button[kind="primary"]:hover { background:var(--terracota); border-color:var(--terracota); color:var(--papel); }
 
-/* Abas tipográficas */
-.stTabs [data-baseweb="tab-list"] { gap:28px; border-bottom:1px solid var(--linha); }
-.stTabs [data-baseweb="tab"] { font-family:'Cormorant Garamond', serif; font-size:1.25rem; padding:6px 0; }
-.stTabs [data-baseweb="tab"] p { font-family:'Cormorant Garamond', serif; font-size:1.25rem; }
-.stTabs [aria-selected="true"] p { color:var(--terracota); }
-.stTabs [data-baseweb="tab-highlight"] { background:var(--terracota); }
+/* Navegação por pílulas (abas principais e páginas do dossiê): terracota; a aberta fica grafite. */
+.st-key-navegacao_abas .stButton button, .st-key-navegacao_paginas .stButton button { width:100%; min-height:46px; height:auto;
+    white-space:normal; line-height:1.25; text-align:center; padding:8px 12px; background:var(--terracota); border:1px solid var(--terracota); }
+.st-key-navegacao_abas .stButton button p, .st-key-navegacao_paginas .stButton button p {
+    white-space:normal; overflow:visible; text-overflow:clip; height:auto; line-height:1.25; }
+.st-key-navegacao_abas .stButton button, .st-key-navegacao_abas .stButton button p,
+.st-key-navegacao_paginas .stButton button, .st-key-navegacao_paginas .stButton button p { color:var(--papel); }
+.st-key-navegacao_abas .stButton button:hover, .st-key-navegacao_paginas .stButton button:hover {
+    background:var(--grafite); border-color:var(--grafite); color:var(--papel); }
+.st-key-navegacao_abas .stButton button:hover p, .st-key-navegacao_paginas .stButton button:hover p { color:var(--papel); }
+.st-key-navegacao_abas .stButton button[kind="primary"], .st-key-navegacao_paginas .stButton button[kind="primary"] {
+    background:var(--grafite); border-color:var(--grafite); }
+.st-key-navegacao_abas .stButton button[kind="primary"]:hover, .st-key-navegacao_paginas .stButton button[kind="primary"]:hover {
+    background:var(--grafite); border-color:var(--grafite); }
+.st-key-navegacao_abas .stButton button { font-family:'Cormorant Garamond', serif; font-size:1.2rem; padding:6px 12px; }
 
 /* Blocos editoriais */
 .hero { padding:30px 40px 26px; background:var(--linho); border-radius:6px; margin-bottom:6px; }
@@ -163,7 +174,18 @@ def secao(rotulo: str, titulo: str):
                 unsafe_allow_html=True)
 
 
-aba_dossie, aba_chat, aba_banco = st.tabs(["Dossiê da cliente", "Metodologia", "Padrões dos casos"])
+# Abas em pílulas (mesmo padrão das páginas do dossiê)
+st.session_state.setdefault("aba_atual", "Dossiê da cliente")
+ABAS = ["Dossiê da cliente", "Metodologia", "Padrões dos casos"]
+with st.container(key="navegacao_abas"):
+    colunas_abas = st.columns(len(ABAS))
+    for coluna_aba, nome_aba in zip(colunas_abas, ABAS):
+        if coluna_aba.button(nome_aba,
+                             key=f"aba_{nome_aba}",
+                             type="primary" if nome_aba == st.session_state.aba_atual else "secondary",
+                             use_container_width=True):
+            st.session_state.aba_atual = nome_aba
+aba_atual = st.session_state.aba_atual
 
 
 def exportar_pasta(sid: str, identificador: str, pacote: str, paginas: dict) -> bytes:
@@ -205,7 +227,7 @@ def importar_pasta(arquivo) -> str:
 
 
 # ---------- 1. Dossiê da cliente ----------
-with aba_dossie:
+if aba_atual == "Dossiê da cliente":
     text_to_sql.ensure_db()
     sessoes = text_to_sql.run(
         "SELECT s.sessao_id, c.identificador, c.modo, c.objetivo_imagem, s.data_sessao, s.pacote, s.status "
@@ -269,9 +291,9 @@ with aba_dossie:
         st.session_state[chave_pag] = next(iter(PAGINAS))
     with st.container(key="navegacao_paginas"):
         nomes_paginas = list(PAGINAS)
-        for inicio in range(0, len(nomes_paginas), 4):
-            colunas = st.columns(4)
-            for coluna, nome_pagina in zip(colunas, nomes_paginas[inicio:inicio + 4]):
+        for inicio in range(0, len(nomes_paginas), 3):
+            colunas = st.columns(3)
+            for coluna, nome_pagina in zip(colunas, nomes_paginas[inicio:inicio + 3]):
                 if coluna.button(f"{'✓ ' if nome_pagina in aprov_pac else ''}{nome_pagina}",
                                  key=f"abrir_{sid}_{pacote}_{inicio}_{nome_pagina}",
                                  type="primary" if nome_pagina == st.session_state[chave_pag] else "secondary",
@@ -341,7 +363,7 @@ with aba_dossie:
         g2.download_button("Baixar páginas aprovadas", texto, file_name=f"dossie_{sid}.md", use_container_width=True)
 
 # ---------- 2. Metodologia (RAG + streaming) ----------
-with aba_chat:
+elif aba_atual == "Metodologia":
     secao("Assistente", "Dúvidas de metodologia durante o atendimento")
     st.caption("Pergunte sobre coloração, visagismo, temperamento, tipologia ou estilo. "
                "As respostas citam o resumo e a seção usados.")
@@ -375,7 +397,7 @@ with aba_chat:
         st.session_state.messages.append({"role": "assistant", "content": texto, "fontes": fontes})
 
 # ---------- 3. Padrões técnicos dos casos (Text-to-SQL no DuckDB) ----------
-with aba_banco:
+elif aba_atual == "Padrões dos casos":
     secao("Casos", "Padrões técnicos entre atendimentos")
     st.caption("Compare casos fictícios por critérios técnicos (cartela, contraste, rosto, temperamento, pacote). "
                "O copiloto gera uma consulta somente leitura e mostra o SQL usado.")
