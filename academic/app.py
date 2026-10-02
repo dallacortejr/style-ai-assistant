@@ -77,21 +77,34 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] { background:var(--p
 .stButton button[kind="primary"] p, .stDownloadButton button[kind="primary"] p { color:var(--papel); }
 .stButton button[kind="primary"]:hover { background:var(--terracota); border-color:var(--terracota); color:var(--papel); }
 
-/* Navegação por pílulas (abas principais e páginas do dossiê): terracota; a aberta fica grafite. */
-.st-key-navegacao_abas .stButton button, .st-key-navegacao_paginas .stButton button { width:100%; min-height:46px; height:auto;
+/* Navegação por pílulas (páginas do dossiê): terracota; a aberta fica grafite. */
+.st-key-navegacao_paginas .stButton button { width:100%; min-height:46px; height:auto;
     white-space:normal; line-height:1.25; text-align:center; padding:8px 12px; background:var(--terracota); border:1px solid var(--terracota); }
-.st-key-navegacao_abas .stButton button p, .st-key-navegacao_paginas .stButton button p {
+.st-key-navegacao_paginas .stButton button p {
     white-space:normal; overflow:visible; text-overflow:clip; height:auto; line-height:1.25; }
-.st-key-navegacao_abas .stButton button, .st-key-navegacao_abas .stButton button p,
 .st-key-navegacao_paginas .stButton button, .st-key-navegacao_paginas .stButton button p { color:var(--papel); }
-.st-key-navegacao_abas .stButton button:hover, .st-key-navegacao_paginas .stButton button:hover {
+.st-key-navegacao_paginas .stButton button:hover {
     background:var(--grafite); border-color:var(--grafite); color:var(--papel); }
-.st-key-navegacao_abas .stButton button:hover p, .st-key-navegacao_paginas .stButton button:hover p { color:var(--papel); }
-.st-key-navegacao_abas .stButton button[kind="primary"], .st-key-navegacao_paginas .stButton button[kind="primary"] {
+.st-key-navegacao_paginas .stButton button:hover p { color:var(--papel); }
+.st-key-navegacao_paginas .stButton button[kind="primary"] {
     background:var(--grafite); border-color:var(--grafite); }
-.st-key-navegacao_abas .stButton button[kind="primary"]:hover, .st-key-navegacao_paginas .stButton button[kind="primary"]:hover {
+.st-key-navegacao_paginas .stButton button[kind="primary"]:hover {
     background:var(--grafite); border-color:var(--grafite); }
-.st-key-navegacao_abas .stButton button { font-family:'Cormorant Garamond', serif; font-size:1.2rem; padding:6px 12px; }
+
+/* Abas principais: controle segmentado conectado — visual distinto das pílulas de páginas. */
+.st-key-navegacao_abas [data-testid="stHorizontalBlock"] { gap:0; align-items:stretch; }
+.st-key-navegacao_abas .stButton button { width:100%; min-height:44px; height:auto; white-space:normal; line-height:1.25;
+    text-align:center; padding:9px 12px; background:var(--linho); border:1px solid var(--linha); border-radius:0;
+    color:var(--grafite); font-family:'Cormorant Garamond', serif; font-size:1.15rem; }
+.st-key-navegacao_abas .stButton button p { color:var(--grafite); white-space:normal; overflow:visible;
+    text-overflow:clip; height:auto; line-height:1.25; }
+.st-key-navegacao_abas [data-testid="stHorizontalBlock"] > div:first-child .stButton button { border-radius:999px 0 0 999px; }
+.st-key-navegacao_abas [data-testid="stHorizontalBlock"] > div:last-child .stButton button { border-radius:0 999px 999px 0; }
+.st-key-navegacao_abas [data-testid="stHorizontalBlock"] > div + div .stButton button { border-left:none; }
+.st-key-navegacao_abas .stButton button:hover { background:#FFFFFF; border-color:var(--suave); }
+.st-key-navegacao_abas .stButton button[kind="primary"], .st-key-navegacao_abas .stButton button[kind="primary"]:hover {
+    background:var(--grafite); border-color:var(--grafite); }
+.st-key-navegacao_abas .stButton button[kind="primary"] p, .st-key-navegacao_abas .stButton button[kind="primary"]:hover p { color:var(--papel); }
 
 /* Blocos editoriais */
 .hero { padding:30px 40px 26px; background:var(--linho); border-radius:6px; margin-bottom:6px; }
