@@ -99,7 +99,10 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] { background:var(--p
 .hero h1 { margin:4px 0 2px; font-size:2.7rem; line-height:1.1; }
  .hero p { color:var(--suave); margin:0; max-width:720px; }
  .hero .assinatura { font-family:'Cormorant Garamond', serif; font-size:1.35rem; color:var(--grafite); margin:0 0 14px; }
-.chamada { color:var(--suave); margin:20px 4px 0; font-size:1.02rem; max-width:720px; }
+.chamada { color:var(--suave); margin:14px 4px 0; font-size:1.02rem; max-width:720px; }
+.pildora-mini { display:inline-block; background:var(--terracota); color:var(--papel); border-radius:999px;
+                padding:4px 14px 5px; font-size:.72rem; font-weight:600; letter-spacing:1.5px;
+                text-transform:uppercase; margin:0 0 8px; }
 .secao { margin:26px 0 6px; }
 .secao .eyebrow { display:block; }
 .secao h3 { margin:2px 0 0; font-size:1.7rem; }
@@ -178,22 +181,36 @@ sessoes = text_to_sql.run(
 )
 
 secao("Atendimento", "Cliente e pacote contratado")
+st.markdown('<p class="chamada">Escolha a cliente, confira o pacote contratado e monte o dossiê '
+            'página por página.</p>', unsafe_allow_html=True)
 rotulo = {r.sessao_id: f"{r.identificador} · {r.data_sessao}" for r in sessoes.itertuples()}
 c1, c2 = st.columns([1, 1])
-sid = c1.selectbox("Cliente em atendimento", list(rotulo), format_func=rotulo.get, key="cliente_sel")
+c1.markdown('<span class="pildora-mini">Cliente em atendimento</span>', unsafe_allow_html=True)
+sid = c1.selectbox("Cliente em atendimento", list(rotulo), format_func=rotulo.get, key="cliente_sel",
+                   label_visibility="collapsed")
 s = sessoes[sessoes.sessao_id == sid].iloc[0]
 chave_pac = f"pacote_{sid}"
 st.session_state.setdefault(chave_pac, s.pacote if s.pacote in pacotes.PACOTES else "pacote_1")
-pacote = c2.selectbox("Pacote contratado", list(pacotes.PACOTES), format_func=pacotes.nome, key=chave_pac)
+c2.markdown('<span class="pildora-mini">Pacote contratado</span>', unsafe_allow_html=True)
+pacote = c2.selectbox("Pacote contratado", list(pacotes.PACOTES), format_func=pacotes.nome, key=chave_pac,
+                      label_visibility="collapsed")
 nome_pac, formato, _ = pacotes.PACOTES[pacote]
 PAGINAS = pacotes.paginas(pacote)
 st.markdown(f'<div class="pacote"><b>{pacotes.nome(pacote)}</b><br><small>{formato} · '
             f'{len(PAGINAS)} páginas no dossiê · status: {s.status.replace("_", " ")}<br>'
             f'O dossiê abre somente as páginas do pacote contratado.</small></div>',
             unsafe_allow_html=True)
-
-st.markdown('<p class="chamada">Escolha a cliente, confira o pacote contratado e monte o dossiê '
-            'página por página.</p>', unsafe_allow_html=True)
+with st.expander("Reabrir pasta de uma cliente salva no computador"):
+    pasta = st.file_uploader("Arquivo da pasta (.zip)", type=["zip"], key="pasta_import")
+    if pasta and st.session_state.get("pasta_lida") != pasta.file_id:
+        try:
+            sid_lido = importar_pasta(pasta)
+            if sid_lido in set(sessoes.sessao_id):
+                st.session_state.cliente_sel = sid_lido
+            st.session_state.pasta_lida = pasta.file_id
+            st.success("Pasta reaberta: pacote, textos, aprovações e fotos restaurados.")
+        except Exception as exc:
+            st.error(f"Não consegui ler essa pasta ({type(exc).__name__}).")
 
 # Abas em pílulas (logo abaixo do atendimento)
 st.session_state.setdefault("aba_atual", "Dossiê da cliente")
@@ -249,18 +266,6 @@ def importar_pasta(arquivo) -> str:
 
 # ---------- 1. Dossiê da cliente ----------
 if aba_atual == "Dossiê da cliente":
-    with st.expander("Reabrir pasta de uma cliente salva no computador"):
-        pasta = st.file_uploader("Arquivo da pasta (.zip)", type=["zip"], key="pasta_import")
-        if pasta and st.session_state.get("pasta_lida") != pasta.file_id:
-            try:
-                sid_lido = importar_pasta(pasta)
-                if sid_lido in set(sessoes.sessao_id):
-                    st.session_state.cliente_sel = sid_lido
-                st.session_state.pasta_lida = pasta.file_id
-                st.success("Pasta reaberta: pacote, textos, aprovações e fotos restaurados.")
-            except Exception as exc:
-                st.error(f"Não consegui ler essa pasta ({type(exc).__name__}).")
-
     def linha(tabela: str):
         df = text_to_sql.run(f"SELECT * EXCLUDE (sessao_id) FROM {tabela} WHERE sessao_id = '{sid}'")
         return df.iloc[0].dropna().to_dict() if len(df) else {}
