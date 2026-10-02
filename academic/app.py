@@ -99,11 +99,11 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] { background:var(--p
 .hero h1 { margin:4px 0 2px; font-size:2.7rem; line-height:1.1; }
  .hero p { color:var(--suave); margin:0; max-width:720px; }
  .hero .assinatura { font-family:'Cormorant Garamond', serif; font-size:1.35rem; color:var(--grafite); margin:0 0 14px; }
-.chamada { color:var(--suave); margin:18px 4px 6px; font-size:1.02rem; max-width:720px; }
+.chamada { color:var(--suave); margin:2px 4px 14px; font-size:1.02rem; max-width:720px; }
 .st-key-navegacao_abas { margin-top:18px; }
 .pildora-mini { display:inline-block; background:var(--terracota); color:var(--papel); border-radius:999px;
                 padding:4px 14px 5px; font-size:.72rem; font-weight:600; letter-spacing:1.5px;
-                text-transform:uppercase; margin:0 0 8px; }
+                text-transform:uppercase; margin:14px 0 -10px; }
 .secao { margin:26px 0 6px; }
 .secao .eyebrow { display:block; }
 .secao h3 { margin:2px 0 0; font-size:1.7rem; }
@@ -182,6 +182,8 @@ sessoes = text_to_sql.run(
 )
 
 secao("Atendimento", "Cliente e pacote contratado")
+st.markdown('<p class="chamada">Escolha a cliente, confira o pacote contratado e monte o dossiê '
+            'página por página.</p>', unsafe_allow_html=True)
 with st.expander("Reabrir pasta de uma cliente salva no computador"):
     pasta = st.file_uploader("Arquivo da pasta (.zip)", type=["zip"], key="pasta_import")
     if pasta and st.session_state.get("pasta_lida") != pasta.file_id:
@@ -210,20 +212,24 @@ st.markdown(f'<div class="pacote"><b>{pacotes.nome(pacote)}</b><br><small>{forma
             f'{len(PAGINAS)} páginas no dossiê · status: {s.status.replace("_", " ")}<br>'
             f'O dossiê abre somente as páginas do pacote contratado.</small></div>',
             unsafe_allow_html=True)
-st.markdown('<p class="chamada">Escolha a cliente, confira o pacote contratado e monte o dossiê '
-            'página por página.</p>', unsafe_allow_html=True)
 
-# Abas em pílulas (com folga abaixo da frase, próximas da escolha da cliente)
+# Abas em pílulas
 st.session_state.setdefault("aba_atual", "Dossiê da cliente")
 ABAS = ["Dossiê da cliente", "Metodologia", "Padrões dos casos"]
+
+
+def _abrir_aba(nome: str):
+    st.session_state.aba_atual = nome
+
+
 with st.container(key="navegacao_abas"):
     colunas_abas = st.columns(len(ABAS))
     for coluna_aba, nome_aba in zip(colunas_abas, ABAS):
-        if coluna_aba.button(nome_aba,
-                             key=f"aba_{nome_aba}",
-                             type="primary" if nome_aba == st.session_state.aba_atual else "secondary",
-                             use_container_width=True):
-            st.session_state.aba_atual = nome_aba
+        coluna_aba.button(nome_aba,
+                          key=f"aba_{nome_aba}",
+                          type="primary" if nome_aba == st.session_state.aba_atual else "secondary",
+                          use_container_width=True,
+                          on_click=_abrir_aba, args=(nome_aba,))
 aba_atual = st.session_state.aba_atual
 
 
@@ -295,16 +301,19 @@ if aba_atual == "Dossiê da cliente":
     chave_pag = f"pag_{sid}_{pacote}"
     if st.session_state.get(chave_pag) not in PAGINAS:
         st.session_state[chave_pag] = next(iter(PAGINAS))
+    def _abrir_pagina(chave_estado: str, nome: str):
+        st.session_state[chave_estado] = nome
+
     with st.container(key="navegacao_paginas"):
         nomes_paginas = list(PAGINAS)
         for inicio in range(0, len(nomes_paginas), 3):
             colunas = st.columns(3)
             for coluna, nome_pagina in zip(colunas, nomes_paginas[inicio:inicio + 3]):
-                if coluna.button(f"{'✓ ' if nome_pagina in aprov_pac else ''}{nome_pagina}",
-                                 key=f"abrir_{sid}_{pacote}_{inicio}_{nome_pagina}",
-                                 type="primary" if nome_pagina == st.session_state[chave_pag] else "secondary",
-                                 use_container_width=True):
-                    st.session_state[chave_pag] = nome_pagina
+                coluna.button(f"{'✓ ' if nome_pagina in aprov_pac else ''}{nome_pagina}",
+                              key=f"abrir_{sid}_{pacote}_{inicio}_{nome_pagina}",
+                              type="primary" if nome_pagina == st.session_state[chave_pag] else "secondary",
+                              use_container_width=True,
+                              on_click=_abrir_pagina, args=(chave_pag, nome_pagina))
     st.progress(len(aprov_pac) / len(PAGINAS), text=f"{len(aprov_pac)} de {len(PAGINAS)} páginas aprovadas")
 
     pagina = st.session_state[chave_pag]
