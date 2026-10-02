@@ -94,11 +94,15 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] { background:var(--p
 /* Abas principais: pílulas menores e centralizadas — destaque em relação às pílulas de páginas. */
 .st-key-navegacao_abas [data-testid="stHorizontalBlock"] { justify-content:center; flex-wrap:nowrap; }
 .st-key-navegacao_abas [data-testid="stHorizontalBlock"] > div { flex:0 0 auto; width:auto; }
-.st-key-navegacao_abas .stButton button { width:auto; min-height:32px; height:auto;
-    text-align:center; padding:4px 18px; background:var(--terracota); border:1px solid var(--terracota);
+.st-key-navegacao_abas .stButton button { display:inline-flex; align-items:center; justify-content:center;
+    width:auto; min-height:32px; height:auto; text-align:center; padding:4px 18px;
+    background:var(--terracota); border:1px solid var(--terracota);
     border-radius:999px; font-family:'Karla', sans-serif; font-size:.78rem; font-weight:600;
     letter-spacing:.4px; }
-.st-key-navegacao_abas .stButton button p { color:var(--papel); height:auto; line-height:1.3; }
+.st-key-navegacao_abas .stButton button [data-testid="stMarkdownContainer"] {
+    display:flex; align-items:center; justify-content:center; width:100%; }
+.st-key-navegacao_abas .stButton button p { color:var(--papel); height:auto; margin:0;
+    line-height:1.3; text-align:center; }
 .st-key-navegacao_abas .stButton button:hover { background:var(--grafite); border-color:var(--grafite); }
 .st-key-navegacao_abas .stButton button[kind="primary"], .st-key-navegacao_abas .stButton button[kind="primary"]:hover {
     background:var(--grafite); border-color:var(--grafite); }
@@ -292,6 +296,7 @@ ABAS = ["Dossiê da cliente", "Metodologia", "Padrões dos casos"]
 
 def _abrir_aba(nome: str):
     st.session_state.aba_atual = nome
+    st.session_state.rolar_para_aba = True
 
 
 with st.container(key="navegacao_abas"):
@@ -302,6 +307,7 @@ with st.container(key="navegacao_abas"):
                           type="primary" if nome_aba == st.session_state.aba_atual else "secondary",
                           on_click=_abrir_aba, args=(nome_aba,))
 aba_atual = st.session_state.aba_atual
+st.markdown('<div id="conteudo-aba"></div>', unsafe_allow_html=True)
 
 
 # ---------- 1. Dossiê da cliente ----------
@@ -445,3 +451,26 @@ elif aba_atual == "Padrões dos casos":
                 st.info(text_to_sql.summarize(q, sql, df.head(20).to_markdown(index=False)))
             except Exception as exc:
                 st.error(f"Não consegui responder: {exc}")
+
+# Os botões refazem a página inteira; após trocar de aba, mantenha a seção aberta à vista.
+if st.session_state.pop("rolar_para_aba", False):
+    import streamlit.components.v1 as components
+
+    components.html("""<script>
+      const go = () => {
+        try {
+          const parentWindow = window.parent;
+          const target = parentWindow.document.getElementById('conteudo-aba');
+          if (!target) return false;
+          parentWindow.scrollTo({
+            top: target.getBoundingClientRect().top + parentWindow.scrollY - 16,
+            behavior: 'instant'
+          });
+          return true;
+        } catch (_) { return true; }
+      };
+      if (!go()) {
+        const timer = setInterval(() => { if (go()) clearInterval(timer); }, 80);
+        setTimeout(() => clearInterval(timer), 3000);
+      }
+    </script>""", height=0)
