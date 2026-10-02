@@ -91,17 +91,15 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] { background:var(--p
 .st-key-navegacao_paginas .stButton button[kind="primary"]:hover {
     background:var(--grafite); border-color:var(--grafite); }
 
-/* Abas principais: controle segmentado conectado — visual distinto das pílulas de páginas. */
-.st-key-navegacao_abas [data-testid="stHorizontalBlock"] { gap:0; align-items:stretch; }
-.st-key-navegacao_abas .stButton button { width:100%; min-height:44px; height:auto; white-space:normal; line-height:1.25;
-    text-align:center; padding:9px 12px; background:var(--linho); border:1px solid var(--linha); border-radius:0;
-    color:var(--grafite); font-family:'Cormorant Garamond', serif; font-size:1.15rem; }
-.st-key-navegacao_abas .stButton button p { color:var(--grafite); white-space:normal; overflow:visible;
-    text-overflow:clip; height:auto; line-height:1.25; }
-.st-key-navegacao_abas [data-testid="stHorizontalBlock"] > div:first-child .stButton button { border-radius:999px 0 0 999px; }
-.st-key-navegacao_abas [data-testid="stHorizontalBlock"] > div:last-child .stButton button { border-radius:0 999px 999px 0; }
-.st-key-navegacao_abas [data-testid="stHorizontalBlock"] > div + div .stButton button { border-left:none; }
-.st-key-navegacao_abas .stButton button:hover { background:#FFFFFF; border-color:var(--suave); }
+/* Abas principais: pílulas menores e centralizadas — destaque em relação às pílulas de páginas. */
+.st-key-navegacao_abas [data-testid="stHorizontalBlock"] { justify-content:center; flex-wrap:nowrap; }
+.st-key-navegacao_abas [data-testid="stHorizontalBlock"] > div { flex:0 0 auto; width:auto; }
+.st-key-navegacao_abas .stButton button { width:auto; min-height:32px; height:auto;
+    text-align:center; padding:4px 18px; background:var(--terracota); border:1px solid var(--terracota);
+    border-radius:999px; font-family:'Karla', sans-serif; font-size:.78rem; font-weight:600;
+    letter-spacing:.4px; }
+.st-key-navegacao_abas .stButton button p { color:var(--papel); height:auto; line-height:1.3; }
+.st-key-navegacao_abas .stButton button:hover { background:var(--grafite); border-color:var(--grafite); }
 .st-key-navegacao_abas .stButton button[kind="primary"], .st-key-navegacao_abas .stButton button[kind="primary"]:hover {
     background:var(--grafite); border-color:var(--grafite); }
 .st-key-navegacao_abas .stButton button[kind="primary"] p, .st-key-navegacao_abas .stButton button[kind="primary"]:hover p { color:var(--papel); }
