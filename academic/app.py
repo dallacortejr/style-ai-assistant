@@ -232,9 +232,7 @@ with aba_dossie:
     st.caption("Catálogo de serviços. O dossiê abre somente as páginas do pacote contratado.")
 
     def linha(tabela: str):
-        df = text_to_sql.run(f"SELECT * EXCLUDE (sessao_id) FROM {tabela} WHERE sessao_id = ?", [sid]) \
-            if "params" in text_to_sql.run.__code__.co_varnames else \
-            text_to_sql.run(f"SELECT * EXCLUDE (sessao_id) FROM {tabela} WHERE sessao_id = '{sid}'")
+        df = text_to_sql.run(f"SELECT * EXCLUDE (sessao_id) FROM {tabela} WHERE sessao_id = '{sid}'")
         return df.iloc[0].dropna().to_dict() if len(df) else {}
 
     dados = {t: linha(t) for t in ("temperamento", "visagismo", "medidas", "teste_coloracao", "coloracao")}
