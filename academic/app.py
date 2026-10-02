@@ -249,12 +249,6 @@ def importar_pasta(arquivo) -> str:
 
 # ---------- 1. Dossiê da cliente ----------
 if aba_atual == "Dossiê da cliente":
-    text_to_sql.ensure_db()
-    sessoes = text_to_sql.run(
-        "SELECT s.sessao_id, c.identificador, c.modo, c.objetivo_imagem, s.data_sessao, s.pacote, s.status "
-        "FROM sessoes s JOIN clientes c USING (cliente_id) ORDER BY s.sessao_id"
-    )
-
     with st.expander("Reabrir pasta de uma cliente salva no computador"):
         pasta = st.file_uploader("Arquivo da pasta (.zip)", type=["zip"], key="pasta_import")
         if pasta and st.session_state.get("pasta_lida") != pasta.file_id:
@@ -266,21 +260,6 @@ if aba_atual == "Dossiê da cliente":
                 st.success("Pasta reaberta: pacote, textos, aprovações e fotos restaurados.")
             except Exception as exc:
                 st.error(f"Não consegui ler essa pasta ({type(exc).__name__}).")
-
-    secao("Atendimento", "Cliente e pacote contratado")
-    rotulo = {r.sessao_id: f"{r.identificador} · {r.data_sessao}" for r in sessoes.itertuples()}
-    c1, c2 = st.columns([1, 1])
-    sid = c1.selectbox("Cliente em atendimento", list(rotulo), format_func=rotulo.get, key="cliente_sel")
-    s = sessoes[sessoes.sessao_id == sid].iloc[0]
-    chave_pac = f"pacote_{sid}"
-    st.session_state.setdefault(chave_pac, s.pacote if s.pacote in pacotes.PACOTES else "pacote_1")
-    pacote = c2.selectbox("Pacote contratado", list(pacotes.PACOTES), format_func=pacotes.nome, key=chave_pac)
-    nome_pac, formato, _ = pacotes.PACOTES[pacote]
-    PAGINAS = pacotes.paginas(pacote)
-    st.markdown(f'<div class="pacote"><b>{pacotes.nome(pacote)}</b><br><small>{formato} · '
-                f'{len(PAGINAS)} páginas no dossiê · status: {s.status.replace("_", " ")}<br>'
-                f'O dossiê abre somente as páginas do pacote contratado.</small></div>',
-                unsafe_allow_html=True)
 
     def linha(tabela: str):
         df = text_to_sql.run(f"SELECT * EXCLUDE (sessao_id) FROM {tabela} WHERE sessao_id = '{sid}'")
