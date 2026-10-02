@@ -83,11 +83,12 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] { background:var(--p
 .stTabs [data-baseweb="tab-highlight"] { background:var(--terracota); }
 
 /* Blocos editoriais */
-.hero { padding:30px 40px 28px; background:var(--linho); border-radius:6px; margin-bottom:22px; }
+.hero { padding:30px 40px 26px; background:var(--linho); border-radius:6px; margin-bottom:6px; }
 .eyebrow { text-transform:uppercase; letter-spacing:3px; color:var(--terracota); font-size:.72rem; font-weight:600; }
 .hero h1 { margin:4px 0 2px; font-size:2.7rem; line-height:1.1; }
  .hero p { color:var(--suave); margin:0; max-width:720px; }
  .hero .assinatura { font-family:'Cormorant Garamond', serif; font-size:1.35rem; color:var(--grafite); margin:0 0 14px; }
+.chamada { color:var(--suave); margin:20px 4px 0; font-size:1.02rem; max-width:720px; }
 .secao { margin:26px 0 6px; }
 .secao .eyebrow { display:block; }
 .secao h3 { margin:2px 0 0; font-size:1.7rem; }
@@ -103,6 +104,10 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] { background:var(--p
  .st-key-navegacao_paginas .stButton button:hover p { color:var(--papel); }
  .st-key-navegacao_paginas .stButton button[kind="primary"] { background:var(--grafite); border-color:var(--grafite); }
  .st-key-navegacao_paginas .stButton button[kind="primary"]:hover { background:var(--grafite); border-color:var(--grafite); }
+ /* Botão "Sugerir texto desta página": mesmo padrão das pílulas — terracota normal, grafite ao clicar. */
+ .st-key-btn_sugerir button { background:var(--terracota) !important; border:1px solid var(--terracota) !important; }
+ .st-key-btn_sugerir button, .st-key-btn_sugerir button p { color:var(--papel) !important; }
+ .st-key-btn_sugerir button:hover { background:var(--grafite) !important; border-color:var(--grafite) !important; }
 .pacote { background:#FFFFFF; border:1px solid var(--linha); border-left:3px solid var(--terracota); border-radius:6px;
           padding:14px 18px; margin:8px 0 4px; }
 .pacote small { color:var(--suave); }
@@ -146,11 +151,11 @@ with st.sidebar:
 
 hora = datetime.now().hour
 saudacao = "Bom dia" if hora < 12 else "Boa tarde" if hora < 18 else "Boa noite"
-st.markdown(f"""<div class="hero"><span class="eyebrow">{perfil['marca']}</span>
-<h1>{saudacao}, {(perfil['nome'].split() or ['consultor'])[0]}.</h1>
- <p class="assinatura">{perfil['assinatura']}</p>
- <p>Escolha a cliente, confira o pacote contratado e monte o dossiê página por página.</p></div>""",
+st.markdown(f"""<div class="hero"><span class="eyebrow">{perfil['assinatura']}</span>
+<h1>{saudacao}, {(perfil['nome'].split() or ['consultor'])[0]}.</h1></div>""",
              unsafe_allow_html=True)
+st.markdown('<p class="chamada">Escolha a cliente, confira o pacote contratado e monte o dossiê '
+            'página por página.</p>', unsafe_allow_html=True)
 
 
 def secao(rotulo: str, titulo: str):
@@ -283,7 +288,7 @@ with aba_dossie:
     with esq:
         st.markdown(f"### {pagina}")
         st.caption(f"Foco da página: {foco}.")
-        if st.button("Sugerir texto desta página", type="primary"):
+        if st.button("Sugerir texto desta página", type="primary", key="btn_sugerir"):
             if not rag.api_key():
                 st.error("Configure a chave Gemini para gerar rascunhos.")
             else:
