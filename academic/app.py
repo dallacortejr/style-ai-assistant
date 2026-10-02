@@ -86,8 +86,8 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] { background:var(--p
 .hero { padding:36px 40px; background:var(--linho); border-radius:6px; margin-bottom:22px; }
 .eyebrow { text-transform:uppercase; letter-spacing:3px; color:var(--terracota); font-size:.72rem; font-weight:600; }
 .hero h1 { margin:6px 0 8px; font-size:2.7rem; }
-.hero p { color:var(--suave); margin:0; max-width:720px; }
-.hero em { font-family:'Cormorant Garamond', serif; font-size:1.15rem; color:var(--grafite); }
+ .hero p { color:var(--suave); margin:0; max-width:720px; }
+ .hero .assinatura { font-family:'Cormorant Garamond', serif; font-size:1.35rem; color:var(--grafite); margin:0 0 12px; }
 .secao { margin:26px 0 6px; }
 .secao .eyebrow { display:block; }
 .secao h3 { margin:2px 0 0; font-size:1.7rem; }
@@ -95,10 +95,11 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] { background:var(--p
 .card h4 { margin:0 0 10px; font-size:1.3rem; border-bottom:1px solid var(--linha); padding-bottom:6px; }
 .card p { margin:3px 0; font-size:.88rem; }
 .card b { color:var(--suave); font-weight:500; }
-.pill { display:inline-block; margin:3px 6px 3px 0; padding:4px 14px; border-radius:999px; font-size:.8rem;
-        border:1px solid var(--linha); color:var(--suave); background:#FFFFFF; }
-.pill.on { background:var(--grafite); border-color:var(--grafite); color:var(--papel); }
-.pill.ok { background:var(--oliva); border-color:var(--oliva); color:var(--papel); }
+ /* Navegação das páginas: a página selecionada é a única aberta abaixo. */
+ .st-key-navegacao_paginas .stButton button { width:100%; min-height:46px; height:auto; white-space:normal;
+     line-height:1.2; text-align:center; padding:8px 12px; background:#FFFFFF; border-color:var(--linha); }
+ .st-key-navegacao_paginas .stButton button[kind="primary"] { background:var(--grafite); border-color:var(--grafite); }
+ .st-key-navegacao_paginas .stButton button[kind="primary"]:hover { background:var(--terracota); color:var(--papel); }
 .pacote { background:#FFFFFF; border:1px solid var(--linha); border-left:3px solid var(--terracota); border-radius:6px;
           padding:14px 18px; margin:8px 0 4px; }
 .pacote small { color:var(--suave); }
@@ -144,8 +145,9 @@ hora = datetime.now().hour
 saudacao = "Bom dia" if hora < 12 else "Boa tarde" if hora < 18 else "Boa noite"
 st.markdown(f"""<div class="hero"><span class="eyebrow">{perfil['marca']}</span>
 <h1>{saudacao}, {(perfil['nome'].split() or ['consultor'])[0]}.</h1>
-<p>Escolha a cliente, confira o pacote contratado e monte o dossiê página por página.
-<em>{perfil['assinatura']}</em></p></div>""", unsafe_allow_html=True)
+ <p class="assinatura">{perfil['assinatura']}</p>
+ <p>Escolha a cliente, confira o pacote contratado e monte o dossiê página por página.</p></div>""",
+             unsafe_allow_html=True)
 
 
 def secao(rotulo: str, titulo: str):
@@ -254,12 +256,22 @@ with aba_dossie:
     secao("Dossiê", "Páginas do pacote")
     aprov = st.session_state.setdefault(f"aprovadas_{sid}", set())
     aprov_pac = aprov & set(PAGINAS)
-    st.markdown("".join(f'<span class="pill {"ok" if p in aprov else ""}">{"✓ " if p in aprov else ""}{p}</span>'
-                        for p in PAGINAS), unsafe_allow_html=True)
+    chave_pag = f"pag_{sid}_{pacote}"
+    if st.session_state.get(chave_pag) not in PAGINAS:
+        st.session_state[chave_pag] = next(iter(PAGINAS))
+    with st.container(key="navegacao_paginas"):
+        nomes_paginas = list(PAGINAS)
+        for inicio in range(0, len(nomes_paginas), 4):
+            colunas = st.columns(4)
+            for coluna, nome_pagina in zip(colunas, nomes_paginas[inicio:inicio + 4]):
+                if coluna.button(f"{'✓ ' if nome_pagina in aprov_pac else ''}{nome_pagina}",
+                                 key=f"abrir_{sid}_{pacote}_{inicio}_{nome_pagina}",
+                                 type="primary" if nome_pagina == st.session_state[chave_pag] else "secondary",
+                                 use_container_width=True):
+                    st.session_state[chave_pag] = nome_pagina
     st.progress(len(aprov_pac) / len(PAGINAS), text=f"{len(aprov_pac)} de {len(PAGINAS)} páginas aprovadas")
 
-    pagina = st.radio("Página em edição", list(PAGINAS), horizontal=True, label_visibility="collapsed",
-                      key=f"pag_{sid}_{pacote}")
+    pagina = st.session_state[chave_pag]
     foco, blocos_pag = PAGINAS[pagina]
     chave = f"texto_{sid}_{pagina}"
     st.session_state.setdefault(chave, "")
