@@ -116,15 +116,73 @@ PAGINAS = {
     "Estilo e montagem final": "estilo pessoal, peças-chave e combinações coerentes com objetivo, cartela e silhueta",
 }
 
+# Módulos de atendimento: cada um é uma etapa da jornada da cliente. Só o dossiê principal está ativo.
+MODULOS = [("Dossiê principal — Pacote 1", True), ("Revisão do dossiê", False),
+           ("Análise de guarda-roupa", False), ("Personal shopping", False), ("Novos módulos", False)]
+
+
+def exportar_pasta(sid: str, identificador: str) -> bytes:
+    """Pasta da cliente (.zip) para o consultor(a) guardar no próprio computador."""
+    import io, json, zipfile
+    fotos = st.session_state.get(f"fotos_{sid}", {})
+    ficha = {"versao": 1, "sessao_id": sid, "cliente": identificador, "modulo": MODULOS[0][0],
+             "salvo_em": datetime.now().isoformat(timespec="minutes"),
+             "paginas": {p: st.session_state.get(f"texto_{sid}_{p}", "") for p in PAGINAS},
+             "aprovadas": sorted(st.session_state.get(f"aprovadas_{sid}", set())),
+             "fotos": {p: [n for n, _ in lst] for p, lst in fotos.items()}}
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("ficha.json", json.dumps(ficha, ensure_ascii=False, indent=2))
+        for i, p in enumerate(PAGINAS):
+            for n, b in fotos.get(p, []):
+                z.writestr(f"fotos/{i + 1:02d}/{n}", b)
+    return buf.getvalue()
+
+
+def importar_pasta(arquivo) -> str:
+    """Reabre uma pasta salva: restaura textos, aprovações e fotos na sessão."""
+    import json, zipfile
+    with zipfile.ZipFile(arquivo) as z:
+        ficha = json.loads(z.read("ficha.json"))
+        sid = ficha["sessao_id"]
+        nomes = list(PAGINAS)
+        fotos = {}
+        for info in z.infolist():
+            partes = info.filename.split("/")
+            if len(partes) == 3 and partes[0] == "fotos" and partes[2]:
+                p = nomes[int(partes[1]) - 1]
+                fotos.setdefault(p, []).append((partes[2], z.read(info)))
+    for p, t in ficha.get("paginas", {}).items():
+        if p in PAGINAS:
+            st.session_state[f"texto_{sid}_{p}"] = t
+    st.session_state[f"aprovadas_{sid}"] = set(ficha.get("aprovadas", []))
+    st.session_state[f"fotos_{sid}"] = fotos
+    return sid
+
+
 # ---------- 1. Montagem do dossiê ----------
 with aba_dossie:
+    st.markdown("".join(f'<span class="pg {"ok" if ativo else ""}">{i + 1}. {m}{"" if ativo else " · em breve"}</span>'
+                        for i, (m, ativo) in enumerate(MODULOS)), unsafe_allow_html=True)
+    st.caption("Jornada de atendimento: cada módulo é uma etapa. Nesta versão, o dossiê principal está ativo.")
+
+    with st.expander("📂 Reabrir pasta de uma cliente salva no computador"):
+        pasta = st.file_uploader("Arquivo da pasta (.zip)", type=["zip"], key="pasta_import")
+        if pasta and st.session_state.get("pasta_lida") != pasta.file_id:
+            try:
+                st.session_state.cliente_sel = importar_pasta(pasta)
+                st.session_state.pasta_lida = pasta.file_id
+                st.success("Pasta reaberta: textos, aprovações e fotos restaurados.")
+            except Exception as exc:
+                st.error(f"Não consegui ler essa pasta ({type(exc).__name__}).")
+
     text_to_sql.ensure_db()
     sessoes = text_to_sql.run(
         "SELECT s.sessao_id, c.identificador, c.modo, c.objetivo_imagem, s.data_sessao, s.status "
         "FROM sessoes s JOIN clientes c USING (cliente_id) ORDER BY s.sessao_id"
     )
     rotulo = {r.sessao_id: f"{r.identificador} · {r.data_sessao} · {r.status}" for r in sessoes.itertuples()}
-    sid = st.selectbox("Cliente em atendimento", list(rotulo), format_func=rotulo.get)
+    sid = st.selectbox("Cliente em atendimento", list(rotulo), format_func=rotulo.get, key="cliente_sel")
     s = sessoes[sessoes.sessao_id == sid].iloc[0]
 
     def linha(tabela: str):
@@ -185,16 +243,29 @@ with aba_dossie:
             st.caption("⚠️ Rascunho gerado por IA — revise antes de aprovar.")
     with dir_:
         st.markdown("##### Referências visuais da página")
-        st.caption("Bases e fotos preparadas por você. Ficam só nesta sessão — nunca são salvas no app.")
+        st.caption("Bases e fotos preparadas por você. Entram na pasta da cliente quando você salva no computador.")
+        fotos = st.session_state.setdefault(f"fotos_{sid}", {})
         imgs = st.file_uploader("Adicionar imagens", type=["png", "jpg", "jpeg"], accept_multiple_files=True,
                                 key=f"img_{sid}_{pagina}")
-        if imgs:
-            st.image([i.getvalue() for i in imgs], width=140)
+        lista = fotos.setdefault(pagina, [])
+        for i in imgs or []:
+            if i.name not in [n for n, _ in lista]:
+                lista.append((i.name, i.getvalue()))
+        if lista:
+            st.image([b for _, b in lista], width=140, caption=[n for n, _ in lista])
+            if st.button("Remover fotos desta página"):
+                fotos[pagina] = []; st.rerun()
 
+    st.markdown("#### 3 · Guardar o atendimento")
+    st.caption("A pasta da cliente fica no seu computador — nada é guardado no app. "
+               "Reabra-a depois para revisões ou próximos módulos.")
+    g1, g2 = st.columns(2)
+    g1.download_button("💾 Salvar pasta da cliente (.zip)", exportar_pasta(sid, s.identificador),
+                       file_name=f"pasta_{s.identificador.replace(' ', '_')}_{sid}.zip", type="primary")
     if aprov:
         texto = f"{perfil['marca']} — Dossiê {s.identificador}\n{perfil['assinatura']}\n\n" + "\n\n".join(
             f"## {p}\n{st.session_state.get(f'texto_{sid}_{p}', '')}" for p in PAGINAS if p in aprov)
-        st.download_button("⬇ Baixar páginas aprovadas", texto, file_name=f"dossie_{sid}.md")
+        g2.download_button("⬇ Baixar páginas aprovadas", texto, file_name=f"dossie_{sid}.md")
 
 # ---------- 2. Assistente metodológico (RAG + streaming) ----------
 with aba_chat:

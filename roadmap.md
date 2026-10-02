@@ -8,5 +8,7 @@
 - [x] 2. CSVs fictícios + script de carga DuckDB e consultas de exemplo (banco gerado localmente)
 - [x] 3. ChromaDB + RAG concluído (66 trechos; gemini-3.8-flash; teste com 4 perguntas OK)
 - [~] 4. App Streamlit (academic/app.py: chat com streaming, text-to-SQL, ficha + sugerir com IA) — falta teste completo quando o Gemini sair da sobrecarga (503)
+- [x] 4a. Montagem do dossiê página a página, visual editorial, perfil editável, jornada de módulos, salvar/reabrir pasta da cliente (.zip)
+- [ ] 4b. Próximos módulos de atendimento (revisão, guarda-roupa etc.) e formulário da cliente — fase futura
 - [ ] 5. README CBL, .env.example, .gitignore, requirements.txt
 - [ ] 6. Publicação Streamlit Cloud + roteiro do vídeo
