@@ -462,10 +462,7 @@ if st.session_state.pop("rolar_para_aba", False):
           const parentWindow = window.parent;
           const target = parentWindow.document.getElementById('conteudo-aba');
           if (!target) return false;
-          parentWindow.scrollTo({
-            top: target.getBoundingClientRect().top + parentWindow.scrollY - 16,
-            behavior: 'instant'
-          });
+          target.scrollIntoView({ behavior: 'instant', block: 'start' });
           return true;
         } catch (_) { return true; }
       };
