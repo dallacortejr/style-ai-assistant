@@ -13,7 +13,7 @@ DB = ROOT / "demonstracao.duckdb"
 SCHEMA_DOC = """Tabelas (DuckDB, dados fictícios):
 consultores(consultor_id, nome_exibicao)
 clientes(cliente_id, consultor_id, identificador ['Cliente A'..'Cliente H'], modo ['feminino'|'masculino'], objetivo_imagem)
-sessoes(sessao_id, cliente_id, data_sessao DATE, pacote, status ['rascunho'|'em_revisao'|'aprovado'])
+sessoes(sessao_id, cliente_id, data_sessao DATE, pacote ['pacote_1'..'pacote_9'; 1=visagismo+biotipo+coloração, 2=guia de estilo, 3=lookbook, 4=personal shopping, 5/6=completa híbrida/online, 7=corporativo, 8=mala, 9=eventos], status ['rascunho'|'em_revisao'|'aprovado'])
 medidas(sessao_id, altura_cm, peso_kg, ombro_cm, busto_cm, torax_cm, cintura_cm, quadril_cm, tronco_cm, pernas_cm, biotipo_confirmado)
 temperamento(sessao_id, primario, secundario, sanguineo_pct, colerico_pct, melancolico_pct, fleumatico_pct)
 visagismo(sessao_id, formato_rosto, posicao_pele, posicao_cabelo, contraste_graus, contraste_faixa ['baixo'|'medio'|'alto'])
