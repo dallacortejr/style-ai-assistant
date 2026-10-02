@@ -430,7 +430,7 @@ elif aba_atual == "Metodologia":
 # ---------- 3. Histórico de casos (consultas em linguagem natural sobre a base) ----------
 elif aba_atual == "Histórico de casos":
     secao("Histórico de casos", "Padrões entre atendimentos")
-    st.caption("Pergunte em lingu natural sobre os casos da base — a consulta é sempre somente leitura, "
+    st.caption("Pergunte em linguagem natural sobre os casos da base — a consulta é sempre somente leitura, "
                "nada é alterado. A base usa apenas dados fictícios.")
     exemplos = ["Quais clientes têm contraste alto e qual o formato de rosto delas?",
                 "Que cartelas aparecem junto com temperamento melancólico?",
