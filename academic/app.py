@@ -107,7 +107,7 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] { background:var(--p
 """, unsafe_allow_html=True)
 
 # ---------- Perfil do consultor(a): pré-preenchido, editável, só na sessão ----------
-st.session_state.setdefault("perfil", {"nome": "Consultor(a) de Imagem", "marca": "Estúdio de Imagem & Estilo",
+st.session_state.setdefault("perfil", {"nome": "Consultor de Imagem", "marca": "Estúdio de Imagem & Estilo",
                                        "assinatura": "Imagem que comunica quem você é."})
 perfil = st.session_state.perfil
 
@@ -134,7 +134,7 @@ with st.sidebar:
                 f'<div class="marca">{perfil["marca"]}</div></div>', unsafe_allow_html=True)
     st.divider()
     st.markdown('<p class="nota">Demonstração acadêmica com dados fictícios.<br>'
-                'O copiloto sugere; a análise e a aprovação são do consultor(a).</p>', unsafe_allow_html=True)
+                'O copiloto sugere; a análise e a aprovação são do consultor.</p>', unsafe_allow_html=True)
     if not rag.api_key():
         st.warning("Chave Gemini não configurada: a IA mostrará só os trechos encontrados.")
     if st.button("Nova conversa no assistente", use_container_width=True):
@@ -143,7 +143,7 @@ with st.sidebar:
 hora = datetime.now().hour
 saudacao = "Bom dia" if hora < 12 else "Boa tarde" if hora < 18 else "Boa noite"
 st.markdown(f"""<div class="hero"><span class="eyebrow">{perfil['marca']}</span>
-<h1>{saudacao}, {(perfil['nome'].split() or ['consultor(a)'])[0]}.</h1>
+<h1>{saudacao}, {(perfil['nome'].split() or ['consultor'])[0]}.</h1>
 <p>Escolha a cliente, confira o pacote contratado e monte o dossiê página por página.
 <em>{perfil['assinatura']}</em></p></div>""", unsafe_allow_html=True)
 
@@ -225,11 +225,9 @@ with aba_dossie:
     nome_pac, formato, _ = pacotes.PACOTES[pacote]
     PAGINAS = pacotes.paginas(pacote)
     st.markdown(f'<div class="pacote"><b>{pacotes.nome(pacote)}</b><br><small>{formato} · '
-                f'{len(PAGINAS)} páginas no dossiê · status: {s.status.replace("_", " ")}</small></div>',
+                f'{len(PAGINAS)} páginas no dossiê · status: {s.status.replace("_", " ")}<br>'
+                f'O dossiê abre somente as páginas do pacote contratado.</small></div>',
                 unsafe_allow_html=True)
-    st.markdown("".join(f'<span class="pill {"on" if k == pacote else ""}">{v[0]}</span>'
-                        for k, v in pacotes.PACOTES.items()), unsafe_allow_html=True)
-    st.caption("Catálogo de serviços. O dossiê abre somente as páginas do pacote contratado.")
 
     def linha(tabela: str):
         df = text_to_sql.run(f"SELECT * EXCLUDE (sessao_id) FROM {tabela} WHERE sessao_id = '{sid}'")
@@ -240,7 +238,7 @@ with aba_dossie:
     car = dados["coloracao"]
 
     secao("Ficha", "O que a cliente trouxe e o que você avaliou")
-    st.caption("Questionário da cliente + avaliação técnica do consultor(a). O copiloto cruza tudo na redação.")
+    st.caption("Questionário da cliente + avaliação técnica do consultor. O copiloto cruza tudo na redação.")
     cartela = {}
     if car:
         cartela = {"cartela": f"{car['cartela'].replace('_', ' ').title()} "
