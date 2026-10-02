@@ -99,7 +99,8 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] { background:var(--p
 .hero h1 { margin:4px 0 2px; font-size:2.7rem; line-height:1.1; }
  .hero p { color:var(--suave); margin:0; max-width:720px; }
  .hero .assinatura { font-family:'Cormorant Garamond', serif; font-size:1.35rem; color:var(--grafite); margin:0 0 14px; }
-.chamada { color:var(--suave); margin:14px 4px 0; font-size:1.02rem; max-width:720px; }
+.chamada { color:var(--suave); margin:18px 4px 6px; font-size:1.02rem; max-width:720px; }
+.st-key-navegacao_abas { margin-top:18px; }
 .pildora-mini { display:inline-block; background:var(--terracota); color:var(--papel); border-radius:999px;
                 padding:4px 14px 5px; font-size:.72rem; font-weight:600; letter-spacing:1.5px;
                 text-transform:uppercase; margin:0 0 8px; }
