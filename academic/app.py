@@ -251,7 +251,30 @@ st.markdown(f'<div class="pacote"><b>{pacotes.nome(pacote)}</b><br><small>{forma
             f'O dossiê abre somente as páginas do pacote contratado.</small></div>',
             unsafe_allow_html=True)
 
-# Abas em pílulas
+# ---------- Ficha: o que a cliente trouxe e o que você avaliou (sempre visível) ----------
+def linha(tabela: str):
+    df = text_to_sql.run(f"SELECT * EXCLUDE (sessao_id) FROM {tabela} WHERE sessao_id = '{sid}'")
+    return df.iloc[0].dropna().to_dict() if len(df) else {}
+
+dados = {t: linha(t) for t in ("temperamento", "visagismo", "medidas", "teste_coloracao", "coloracao")}
+dados["cliente"] = {"modo": s.modo, "objetivo": s.objetivo_imagem}
+car = dados["coloracao"]
+
+secao("Ficha", "O que a cliente trouxe e o que você avaliou")
+st.caption("Questionário da cliente + avaliação técnica do consultor. O copiloto cruza tudo na redação.")
+cartela = {}
+if car:
+    cartela = {"cartela": f"{car['cartela'].replace('_', ' ').title()} "
+                          f"({'confirmada' if car.get('confirmada_pelo_consultor') == 'sim' else 'a confirmar'})"}
+blocos = [("Cliente", dados["cliente"]), ("Temperamento", dados["temperamento"]),
+          ("Visagismo", dados["visagismo"]), ("Tipologia", dados["medidas"]),
+          ("Coloração", {**dados["teste_coloracao"], **cartela})]
+for col, (titulo, d) in zip(st.columns(5), blocos):
+    itens = "".join(f"<p><b>{k.replace('_', ' ')}</b> · {v}</p>" for k, v in d.items())
+    col.markdown(f'<div class="card"><h4>{titulo}</h4>{itens or "<p><i>pendente</i></p>"}</div>',
+                 unsafe_allow_html=True)
+
+# Abas em pílulas (logo abaixo da ficha)
 st.session_state.setdefault("aba_atual", "Dossiê da cliente")
 ABAS = ["Dossiê da cliente", "Metodologia", "Padrões dos casos"]
 
@@ -271,69 +294,8 @@ with st.container(key="navegacao_abas"):
 aba_atual = st.session_state.aba_atual
 
 
-def exportar_pasta(sid: str, identificador: str, pacote: str, paginas: dict) -> bytes:
-    """Pasta da cliente (.zip) para o consultor(a) guardar no próprio computador."""
-    fotos = st.session_state.get(f"fotos_{sid}", {})
-    nomes = list(paginas)
-    ficha = {"versao": 2, "sessao_id": sid, "cliente": identificador, "pacote": pacote,
-             "pacote_nome": pacotes.nome(pacote), "salvo_em": datetime.now().isoformat(timespec="minutes"),
-             "paginas": {p: st.session_state.get(f"texto_{sid}_{p}", "") for p in nomes},
-             "aprovadas": sorted(st.session_state.get(f"aprovadas_{sid}", set())),
-             "fotos": {p: [n for n, _ in fotos.get(p, [])] for p in nomes if fotos.get(p)}}
-    buf = io.BytesIO()
-    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
-        z.writestr("ficha.json", json.dumps(ficha, ensure_ascii=False, indent=2))
-        for i, p in enumerate(nomes):
-            for n, b in fotos.get(p, []):
-                z.writestr(f"fotos/{i + 1:02d}/{n}", b)
-    return buf.getvalue()
-
-
-def importar_pasta(arquivo) -> str:
-    """Reabre uma pasta salva: restaura pacote, textos, aprovações e fotos na sessão."""
-    with zipfile.ZipFile(arquivo) as z:
-        ficha = json.loads(z.read("ficha.json"))
-        sid = ficha["sessao_id"]
-        pacote = ficha.get("pacote", "pacote_1")
-        nomes = list(ficha.get("paginas") or pacotes.paginas(pacote))
-        fotos = {}
-        for info in z.infolist():
-            partes = info.filename.split("/")
-            if len(partes) == 3 and partes[0] == "fotos" and partes[2] and int(partes[1]) <= len(nomes):
-                fotos.setdefault(nomes[int(partes[1]) - 1], []).append((partes[2], z.read(info)))
-    st.session_state[f"pacote_{sid}"] = pacote
-    for p, t in ficha.get("paginas", {}).items():
-        st.session_state[f"texto_{sid}_{p}"] = t
-    st.session_state[f"aprovadas_{sid}"] = set(ficha.get("aprovadas", []))
-    st.session_state[f"fotos_{sid}"] = fotos
-    return sid
-
-
 # ---------- 1. Dossiê da cliente ----------
 if aba_atual == "Dossiê da cliente":
-    def linha(tabela: str):
-        df = text_to_sql.run(f"SELECT * EXCLUDE (sessao_id) FROM {tabela} WHERE sessao_id = '{sid}'")
-        return df.iloc[0].dropna().to_dict() if len(df) else {}
-
-    dados = {t: linha(t) for t in ("temperamento", "visagismo", "medidas", "teste_coloracao", "coloracao")}
-    dados["cliente"] = {"modo": s.modo, "objetivo": s.objetivo_imagem}
-    car = dados["coloracao"]
-
-    secao("Ficha", "O que a cliente trouxe e o que você avaliou")
-    st.caption("Questionário da cliente + avaliação técnica do consultor. O copiloto cruza tudo na redação.")
-    cartela = {}
-    if car:
-        cartela = {"cartela": f"{car['cartela'].replace('_', ' ').title()} "
-                              f"({'confirmada' if car.get('confirmada_pelo_consultor') == 'sim' else 'a confirmar'})"}
-    blocos = [("Cliente", dados["cliente"]), ("Temperamento", dados["temperamento"]),
-              ("Visagismo", dados["visagismo"]), ("Tipologia", dados["medidas"]),
-              ("Coloração", {**dados["teste_coloracao"], **cartela})]
-    for col, (titulo, d) in zip(st.columns(5), blocos):
-        itens = "".join(f"<p><b>{k.replace('_', ' ')}</b> · {v}</p>" for k, v in d.items())
-        col.markdown(f'<div class="card"><h4>{titulo}</h4>{itens or "<p><i>pendente</i></p>"}</div>',
-                     unsafe_allow_html=True)
-
-    secao("Dossiê", "Páginas do pacote")
     aprov = st.session_state.setdefault(f"aprovadas_{sid}", set())
     aprov_pac = aprov & set(PAGINAS)
     chave_pag = f"pag_{sid}_{pacote}"
