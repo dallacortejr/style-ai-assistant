@@ -291,7 +291,7 @@ for col, (titulo, d) in zip(st.columns(5), blocos):
 
 # Abas em pílulas (logo abaixo da ficha)
 st.session_state.setdefault("aba_atual", "Dossiê da cliente")
-ABAS = ["Dossiê da cliente", "Metodologia", "Padrões dos casos"]
+ABAS = ["Dossiê da cliente", "Metodologia", "Histórico de casos"]
 
 
 def _abrir_aba(nome: str):
@@ -427,11 +427,11 @@ elif aba_atual == "Metodologia":
                         st.markdown(f"**{t['fonte']} › {t['secao']}**\n\n{t['texto']}")
         st.session_state.messages.append({"role": "assistant", "content": texto, "fontes": fontes})
 
-# ---------- 3. Padrões técnicos dos casos (Text-to-SQL no DuckDB) ----------
-elif aba_atual == "Padrões dos casos":
-    secao("Casos", "Padrões técnicos entre atendimentos")
-    st.caption("Compare casos fictícios por critérios técnicos (cartela, contraste, rosto, temperamento, pacote). "
-               "O copiloto gera uma consulta somente leitura e mostra o SQL usado.")
+# ---------- 3. Histórico de casos (consultas em linguagem natural sobre a base) ----------
+elif aba_atual == "Histórico de casos":
+    secao("Histórico de casos", "Padrões entre atendimentos")
+    st.caption("Pergunte em lingu natural sobre os casos da base — a consulta é sempre somente leitura, "
+               "nada é alterado. A base usa apenas dados fictícios.")
     exemplos = ["Quais clientes têm contraste alto e qual o formato de rosto delas?",
                 "Que cartelas aparecem junto com temperamento melancólico?",
                 "Quais cartelas ainda estão aguardando confirmação do consultor?",
@@ -443,12 +443,13 @@ elif aba_atual == "Padrões dos casos":
             st.error("Configure a chave Gemini para consultar em linguagem natural.")
         else:
             try:
-                with st.spinner("Gerando a consulta…"):
+                with st.spinner("Consultando o histórico…"):
                     sql = text_to_sql.to_sql(q)
-                st.code(sql, language="sql")
                 df = text_to_sql.run(sql)
                 st.dataframe(df, use_container_width=True)
                 st.info(text_to_sql.summarize(q, sql, df.head(20).to_markdown(index=False)))
+                with st.expander("Ver consulta gerada (detalhe técnico)"):
+                    st.code(sql, language="sql")
             except Exception as exc:
                 st.error(f"Não consegui responder: {exc}")
 
