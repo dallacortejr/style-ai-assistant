@@ -432,12 +432,7 @@ elif aba_atual == "Histórico de casos":
     secao("Histórico de casos", "Padrões entre atendimentos")
     st.caption("Pergunte em linguagem natural sobre os casos da base — a consulta é sempre somente leitura, "
                "nada é alterado. A base usa apenas dados fictícios.")
-    exemplos = ["Quais clientes têm contraste alto e qual o formato de rosto delas?",
-                "Que cartelas aparecem junto com temperamento melancólico?",
-                "Quais cartelas ainda estão aguardando confirmação do consultor?",
-                "Quais clientes contrataram pacotes com coloração e qual a cartela de cada uma?"]
-    escolha = st.selectbox("Exemplos", ["—"] + exemplos)
-    q = st.text_input("Sua pergunta", value="" if escolha == "—" else escolha)
+    q = st.text_input("Sua pergunta", placeholder="Ex.: quais clientes têm o mesmo biotipo? E a mesma cartela de cores?")
     if st.button("Consultar", type="primary") and q:
         if not rag.api_key():
             st.error("Configure a chave Gemini para consultar em linguagem natural.")
