@@ -165,16 +165,37 @@ saudacao = "Bom dia" if hora < 12 else "Boa tarde" if hora < 18 else "Boa noite"
 st.markdown(f"""<div class="hero"><span class="eyebrow">{perfil['assinatura']}</span>
 <h1>{saudacao}, {(perfil['nome'].split() or ['consultor'])[0]}.</h1></div>""",
              unsafe_allow_html=True)
-st.markdown('<p class="chamada">Escolha a cliente, confira o pacote contratado e monte o dossiê '
-            'página por página.</p>', unsafe_allow_html=True)
-
-
 def secao(rotulo: str, titulo: str):
     st.markdown(f'<div class="secao"><span class="eyebrow">{rotulo}</span><h3>{titulo}</h3></div>',
                 unsafe_allow_html=True)
 
 
-# Abas em pílulas (mesmo padrão das páginas do dossiê)
+# ---------- Atendimento: cliente e pacote contratado (sempre no topo) ----------
+text_to_sql.ensure_db()
+sessoes = text_to_sql.run(
+    "SELECT s.sessao_id, c.identificador, c.modo, c.objetivo_imagem, s.data_sessao, s.pacote, s.status "
+    "FROM sessoes s JOIN clientes c USING (cliente_id) ORDER BY s.sessao_id"
+)
+
+secao("Atendimento", "Cliente e pacote contratado")
+rotulo = {r.sessao_id: f"{r.identificador} · {r.data_sessao}" for r in sessoes.itertuples()}
+c1, c2 = st.columns([1, 1])
+sid = c1.selectbox("Cliente em atendimento", list(rotulo), format_func=rotulo.get, key="cliente_sel")
+s = sessoes[sessoes.sessao_id == sid].iloc[0]
+chave_pac = f"pacote_{sid}"
+st.session_state.setdefault(chave_pac, s.pacote if s.pacote in pacotes.PACOTES else "pacote_1")
+pacote = c2.selectbox("Pacote contratado", list(pacotes.PACOTES), format_func=pacotes.nome, key=chave_pac)
+nome_pac, formato, _ = pacotes.PACOTES[pacote]
+PAGINAS = pacotes.paginas(pacote)
+st.markdown(f'<div class="pacote"><b>{pacotes.nome(pacote)}</b><br><small>{formato} · '
+            f'{len(PAGINAS)} páginas no dossiê · status: {s.status.replace("_", " ")}<br>'
+            f'O dossiê abre somente as páginas do pacote contratado.</small></div>',
+            unsafe_allow_html=True)
+
+st.markdown('<p class="chamada">Escolha a cliente, confira o pacote contratado e monte o dossiê '
+            'página por página.</p>', unsafe_allow_html=True)
+
+# Abas em pílulas (logo abaixo do atendimento)
 st.session_state.setdefault("aba_atual", "Dossiê da cliente")
 ABAS = ["Dossiê da cliente", "Metodologia", "Padrões dos casos"]
 with st.container(key="navegacao_abas"):
