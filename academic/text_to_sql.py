@@ -25,6 +25,9 @@ SQL_SYSTEM = f"""Você converte perguntas de um(a) consultor(a) de imagem em UMA
 {SCHEMA_DOC}
 Regras: apenas SELECT (ou WITH ... SELECT); nunca altere dados; valores em minúsculas
 com underscore; inclua clientes.identificador quando listar pessoas; LIMIT 50.
+Ao usar GROUP BY, toda coluna do SELECT deve estar no GROUP BY ou dentro de função
+agregada (COUNT, AVG, STRING_AGG etc.) — nunca misture colunas soltas com agregação.
+Prefira DISTINCT ou subconsultas a GROUP BY quando só listar pessoas.
 Responda só com o SQL, sem explicações nem crases."""
 
 FORBIDDEN = re.compile(r"\b(insert|update|delete|drop|alter|create|copy|attach|install|load|pragma|export|call|set)\b", re.I)
