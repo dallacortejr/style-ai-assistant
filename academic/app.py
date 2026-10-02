@@ -151,11 +151,11 @@ with st.sidebar:
 
 hora = datetime.now().hour
 saudacao = "Bom dia" if hora < 12 else "Boa tarde" if hora < 18 else "Boa noite"
-st.markdown(f"""<div class="hero"><span class="eyebrow">{perfil['marca']}</span>
-<h1>{saudacao}, {(perfil['nome'].split() or ['consultor'])[0]}.</h1>
- <p class="assinatura">{perfil['assinatura']}</p>
- <p>Escolha a cliente, confira o pacote contratado e monte o dossiê página por página.</p></div>""",
+st.markdown(f"""<div class="hero"><span class="eyebrow">{perfil['assinatura']}</span>
+<h1>{saudacao}, {(perfil['nome'].split() or ['consultor'])[0]}.</h1></div>""",
              unsafe_allow_html=True)
+st.markdown('<p class="chamada">Escolha a cliente, confira o pacote contratado e monte o dossiê '
+            'página por página.</p>', unsafe_allow_html=True)
 
 
 def secao(rotulo: str, titulo: str):
@@ -288,7 +288,7 @@ with aba_dossie:
     with esq:
         st.markdown(f"### {pagina}")
         st.caption(f"Foco da página: {foco}.")
-        if st.button("Sugerir texto desta página", type="primary"):
+        if st.button("Sugerir texto desta página", type="primary", key="btn_sugerir"):
             if not rag.api_key():
                 st.error("Configure a chave Gemini para gerar rascunhos.")
             else:
