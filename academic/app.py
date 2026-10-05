@@ -176,8 +176,6 @@ with st.sidebar:
                 'O copiloto sugere; a análise e a aprovação são do consultor.</p>', unsafe_allow_html=True)
     if not rag.api_key():
         st.warning("Chave Gemini não configurada: a IA mostrará só os trechos encontrados.")
-    if st.button("Nova conversa no assistente", use_container_width=True):
-        st.session_state.messages = []
 
 hora = datetime.now().hour
 saudacao = "Bom dia" if hora < 12 else "Boa tarde" if hora < 18 else "Boa noite"
@@ -395,15 +393,16 @@ if aba_atual == "Dossiê da cliente":
 
 # ---------- 2. Metodologia (RAG + streaming) ----------
 elif aba_atual == "Metodologia":
-    secao("Assistente", "Dúvidas de metodologia durante o atendimento")
-    st.caption("Pergunte sobre coloração, visagismo, temperamento, tipologia ou estilo. "
-               "As respostas citam o resumo e a seção usados.")
+    t1, t2 = st.columns([12, 1], vertical_alignment="bottom")
+    with t1:
+        secao("Assistente", "Dúvidas de metodologia durante o atendimento")
+    if t2.button("↺", key="limpar_metodologia", help="Nova conversa (limpa o histórico)"):
+        st.session_state.messages = []
+    st.caption("Pergunte sobre coloração, visagismo, temperamento, tipologia ou estilo.")
     st.session_state.setdefault("messages", [])
     for m in st.session_state.messages:
         with st.chat_message(m["role"]):
             st.markdown(m["content"])
-            if m.get("fontes"):
-                st.caption("Fontes: " + " · ".join(m["fontes"]))
 
     pergunta = st.chat_input("Ex.: Que corte valoriza rosto quadrado com contraste alto?")
     if pergunta:
@@ -420,19 +419,19 @@ elif aba_atual == "Metodologia":
                 texto, trechos = f"Não foi possível gerar a resposta agora ({type(exc).__name__}). Tente novamente.", []
                 st.error(texto)
             fontes = list(dict.fromkeys(f"{t['fonte']} › {t['secao']}" for t in trechos))
-            if fontes:
-                st.caption("Fontes: " + " · ".join(fontes))
-                with st.expander("Ver trechos recuperados"):
-                    for t in trechos:
-                        st.markdown(f"**{t['fonte']} › {t['secao']}**\n\n{t['texto']}")
         st.session_state.messages.append({"role": "assistant", "content": texto, "fontes": fontes})
 
 # ---------- 3. Histórico de casos (consultas em linguagem natural sobre a base) ----------
 elif aba_atual == "Histórico de casos":
-    secao("Histórico de casos", "Padrões entre atendimentos")
+    t1, t2 = st.columns([12, 1], vertical_alignment="bottom")
+    with t1:
+        secao("Histórico de casos", "Padrões entre atendimentos")
+    if t2.button("↺", key="limpar_historico", help="Nova consulta (limpa a pergunta)"):
+        st.session_state.pop("hist_pergunta", None)
     st.caption("Pergunte em linguagem natural sobre os casos da base — a consulta é sempre somente leitura, "
                "nada é alterado. A base usa apenas dados fictícios.")
-    q = st.text_input("Sua pergunta", placeholder="Ex.: quais clientes têm o mesmo biotipo? E a mesma cartela de cores?")
+    q = st.text_input("Sua pergunta", placeholder="Ex.: quais clientes têm o mesmo biotipo? E a mesma cartela de cores?",
+                      key="hist_pergunta")
     if st.button("Consultar", type="primary") and q:
         if not rag.api_key():
             st.error("Configure a chave Gemini para consultar em linguagem natural.")
