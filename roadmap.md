@@ -14,3 +14,4 @@
 - [ ] 4b. Próximos módulos de atendimento (revisão, guarda-roupa etc.) e formulário da cliente — fase futura
 - [ ] 5. README CBL, .env.example, .gitignore, requirements.txt
 - [ ] 6. Publicação Streamlit Cloud + roteiro do vídeo
+- [~] 7. Entrega Etapa 1: relatório PDF + roteiro prontos; falta a gravação do vídeo (feita pelo usuário)
