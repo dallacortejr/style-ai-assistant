@@ -1,9 +1,9 @@
 duckdb>=1.2,<2
 chromadb>=1.0,<2
-sentence-transformers>=5,<6
+sentence-transformers>=5.6.0,<6
 google-genai>=1,<2
 streamlit>=1.40,<2
 pandas>=2
 tabulate>=0.9
-python-dotenv>=1
-requests>=2
+python-dotenv>=1.2.2
+requests>=2.33.0
