@@ -1,3 +1,5 @@
+> Registro histórico da etapa 1. A implementação React atual, as decisões do usuário e as pendências estão no README e em docs/. Este snapshot não substitui as instruções atuais do usuário.
+
 # HANDOFF — Copiloto de Consultoria de Imagem e Estilo
 
 Snapshot gerado em 05/10/2026. Projeto acadêmico (disciplina IA Factory, Etapa 1). Idioma do produto: português (Brasil).

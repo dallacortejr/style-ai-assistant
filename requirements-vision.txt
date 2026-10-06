@@ -1,0 +1,4 @@
+# Dependências da instalação anterior. Instalação isolada recomendada.
+-r requirements.txt
+mediapipe==1.0.1
+opencv-python==5.0.0.93

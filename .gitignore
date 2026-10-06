@@ -38,3 +38,11 @@ academic/chroma_store/
 .env
 academic/.env
 __pycache__/
+
+runtime/
+.venv/
+previous/
+*.sqlite3
+*.sqlite3-*
+*.task
+.pytest_cache/

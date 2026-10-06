@@ -10,7 +10,7 @@
 <!-- LOVABLE:END -->
 
 <!-- Project decisions -->
-- Keep reusable sample media/product references separate from per-client recommendations; the consultant edits each client's selections without changing the general library, so examples never become personalized advice by default.
+- User decision: no fixed clothing catalog or automatic clothing classification. Clothing, photos, preferences and recommendations stay scoped to each client session. Reusable editorial patterns require a separately authorized, generalized excerpt from an approved page; they are writing/method references, never evidence about another client.
 - Treat academic/data CSVs as the sole reproducible synthetic demo source and regenerate DuckDB with academic/init_db.py; this prevents real client data and local database binaries entering the public repository.
 - Index only approved original-language summaries in academic/knowledge with section/source metadata; full third-party PDFs stay outside the RAG index to keep retrieval attributable and avoid copying protected texts.
 
