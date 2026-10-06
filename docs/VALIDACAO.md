@@ -9,7 +9,7 @@ Execução local em 05/10/2026 (horário de Brasília; registros técnicos usam 
 | TypeScript `tsc --noEmit` | Passou | Contratos e componentes compilam |
 | ESLint | Zero erros; seis avisos de Fast Refresh nos componentes da estrutura original | Regras e formatação verificadas; avisos não bloqueiam build |
 | Vite client + SSR + worker Cloudflare | Passou | Artefato React construído; não comprova implantação pública |
-| `pytest` (suíte completa + transferência administrativa) | **53 passaram** | Aprovação humana, revisão concorrente, ZIP/imagens, SQL, streaming, ML e 16 testes de fronteiras SaaS |
+| `pytest tests -q` | **57 passaram** | Aprovação humana, revisão concorrente, ZIP/imagens, SQL, streaming, ML e 16 testes de fronteiras SaaS |
 | `python -m evaluation.retrieval` | **14/14** em modo lexical e depois Chroma/Ollama | Onze verificações de presença da fonte esperada entre quatro resultados e três bloqueios de entrada |
 | Índice Chroma/Ollama | **66 trechos** indexados | Embeddings dos resumos próprios gerados no computador |
 | Ollama `llama3.1:8b` | **Cinco execuções reais**: um rascunho e quatro consultas com streaming | Integração real, fontes, latência e tokens do provedor; não são métricas de qualidade da geração |
@@ -61,3 +61,9 @@ No navegador, foi usada uma conta exclusivamente fictícia: login, estúdio inic
 [Estúdio vazio de uma nova conta](screenshots/saas-estudio.png) · [Perfil e mensalidade](screenshots/saas-perfil.png) · [Perfil no celular](screenshots/saas-perfil-mobile.png) · [Cadastro no celular](screenshots/saas-cadastro-mobile.png).
 
 Os dados anteriores do ambiente local permanecem sem proprietário até a transferência administrativa explícita. Não se executou a transferência de dados existentes durante esta implementação. O checkout continua indisponível e a versão continua local; os testes não comprovam pagamento real nem implantação na nuvem.
+
+## Atualização de foto e logo
+
+A suíte completa foi executada novamente: **57 testes passaram**. Os quatro testes adicionais verificam uploads no cadastro e recuperação no login; remoção de EXIF/metadados e transparência da logo; isolamento entre contas, preservação na edição apenas do nome e remoção explícita; rejeição de formato/bytes/tamanho sem alteração parcial; e migração de contas anteriores sem perda de senha ou identidade. Apenas imagens sintéticas foram utilizadas.
+
+O navegador confirmou as prévias de foto e logo no cadastro. Evidência: [cadastro com uploads](screenshots/identidade-cadastro.png). O perfil foi salvo pela interface, atualizando avatar e logo, e o recarregamento preservou a identidade. A conferência móvel em 390×844 mostrou foto e logo no cabeçalho. Essas verificações usam a mesma conta fictícia de desenvolvimento, sem fotos pessoais. Evidências: [perfil](screenshots/identidade-perfil.png) e [celular](screenshots/identidade-mobile.png).

@@ -58,12 +58,14 @@ Todos os endpoints de dados exigem `consultoria_session`, cookie HttpOnly. Escri
 
 | Método | Caminho | Resultado |
 | --- | --- | --- |
-| POST | `/auth/register` | `{name,email,password}`; 201, conta e CSRF; cookie de sessão |
+| POST | `/auth/register` | `{name,email,password,photo?,logo?}`; 201, conta e CSRF; cookie de sessão |
 | POST | `/auth/login` | `{email,password}`; conta e CSRF; troca a sessão do navegador |
 | GET | `/auth/me` | Conta atual e CSRF, ou 401 |
-| PUT | `/auth/profile` | `{name}`; perfil atualizado; não altera senha, e-mail nem assinatura |
+| PUT | `/auth/profile` | `{name,photo?,logo?}`; perfil atualizado; não altera senha, e-mail nem assinatura |
 | POST | `/auth/logout` | Revoga a sessão e remove o cookie |
 | POST | `/demo/seeds` | Carrega exemplos fictícios somente se a conta está vazia |
 | POST | `/billing/checkout` | 503: provedor não configurado; não cria cobrança |
 
-A conta pública contém `id,name,email,created,subscription`. A assinatura inclui `status,cycle,provider,checkout_available,price`, com estado inicial `pilot`, ciclo `monthly` e valores comerciais indefinidos. Tentativas de modificar o status via perfil retornam 422. Falta de sessão: 401; CSRF/origem: 403; registro de outra conta: 404; assinatura inativa sob enforcement: 402; limite de autenticação: 429. `/health` e schemas OpenAPI continuam públicos sem dados privados.
+A conta pública contém `id,name,email,created,photo,logo,subscription`. A assinatura inclui `status,cycle,provider,checkout_available,price`, com estado inicial `pilot`, ciclo `monthly` e valores comerciais indefinidos. Tentativas de modificar o status via perfil retornam 422. Falta de sessão: 401; CSRF/origem: 403; registro de outra conta: 404; assinatura inativa sob enforcement: 402; limite de autenticação: 429. `/health` e schemas OpenAPI continuam públicos sem dados privados.
+
+Uploads de identidade: `photo` e `logo` aceitam data URLs PNG/JPEG de até 3 MB por imagem. Na edição, campo omitido preserva a imagem e `null` a remove. Validação e reencodificação ocorrem no servidor antes de qualquer alteração persistida; ver SAAS.md.

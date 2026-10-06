@@ -14,7 +14,7 @@ from uuid import uuid4
 from fastapi import APIRouter, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
-from . import store
+from . import store, photos
 
 router = APIRouter()
 COOKIE = "consultoria_session"
@@ -23,6 +23,10 @@ COOKIE = "consultoria_session"
 def connect():
     con = store.connect()
     con.execute("CREATE TABLE IF NOT EXISTS consultants (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password TEXT NOT NULL, created TEXT NOT NULL, subscription TEXT NOT NULL)")
+    columns = {r[1] for r in con.execute("PRAGMA table_info(consultants)")}
+    for column in ("photo", "logo"):
+        if column not in columns:
+            con.execute(f"ALTER TABLE consultants ADD COLUMN {column} TEXT")
     con.execute("CREATE TABLE IF NOT EXISTS auth_sessions (token TEXT PRIMARY KEY, owner TEXT NOT NULL, csrf TEXT NOT NULL, expires REAL NOT NULL)")
     con.execute("CREATE TABLE IF NOT EXISTS auth_attempts (ip TEXT NOT NULL, moment REAL NOT NULL)")
     return con
@@ -51,6 +55,7 @@ DUMMY_PASSWORD = password_hash("dummy-password-never-used", "00"*16)
 
 def profile(row):
     return {"id": row[0], "name": row[1], "email": row[2], "created": row[4],
+            "photo": row[6], "logo": row[7],
             "subscription": {"status": row[5], "cycle": "monthly", "provider": None,
                              "checkout_available": False, "price": None}}
 
@@ -63,11 +68,44 @@ class Login(BaseModel):
 
 class Registration(Login):
     name: str = Field(min_length=2, max_length=100)
+    photo: str | None = Field(default=None, max_length=4_000_050)
+    logo: str | None = Field(default=None, max_length=4_000_050)
 
 
 class ProfileInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
     name: str = Field(min_length=2, max_length=100)
+    photo: str | None = Field(default=None, max_length=4_000_050)
+    logo: str | None = Field(default=None, max_length=4_000_050)
+
+
+def identity_image(value, kind):
+    """Reencoda os pixels: descarta EXIF/metadados e mantém transparência da logo."""
+    if not value:
+        return None
+    import base64
+    import io
+    from PIL import Image, ImageOps
+    raw = photos.validate(value)
+    with Image.open(io.BytesIO(raw)) as source:
+        image = ImageOps.exif_transpose(source)
+        size = 512 if kind == "photo" else 768
+        image.thumbnail((size, size), Image.Resampling.LANCZOS)
+        out = io.BytesIO()
+        if kind == "photo":
+            prepared = image.convert("RGB")
+            prepared.info.clear()
+            prepared.save(out, format="JPEG", quality=90, exif=b"")
+            mime = "jpeg"
+        else:
+            prepared = image.convert("RGBA")
+            prepared.info.clear()
+            prepared.save(out, format="PNG", exif=b"")
+            mime = "png"
+    data = out.getvalue()
+    if len(data) > 3_000_000:
+        raise ValueError("Imagem processada maior que 3 MB. Envie uma versão menor.")
+    return f"data:image/{mime};base64," + base64.b64encode(data).decode()
 
 
 def email(value):
@@ -107,11 +145,12 @@ def register(body: Registration, request: Request, response: Response):
     address, name = email(body.email), body.name.strip()
     if len(name) < 2:
         raise HTTPException(422, "Informe seu nome profissional.")
+    photo, logo = identity_image(body.photo, "photo"), identity_image(body.logo, "logo")
     hashed = password_hash(body.password)
     import sqlite3
     try:
         with connect() as con:
-            con.execute("INSERT INTO consultants VALUES (?,?,?,?,?,?)", (uuid4().hex, name, address, hashed, store.now(), "pilot"))
+            con.execute("INSERT INTO consultants (id,name,email,password,created,subscription,photo,logo) VALUES (?,?,?,?,?,?,?,?)", (uuid4().hex, name, address, hashed, store.now(), "pilot", photo, logo))
             row = con.execute("SELECT * FROM consultants WHERE email=?", (address,)).fetchone()
     except sqlite3.IntegrityError as exc:
         raise HTTPException(409, "Este e-mail já possui cadastro. Entre com sua senha.") from exc
@@ -142,8 +181,11 @@ def update_profile(body: ProfileInput):
     name = body.name.strip()
     if len(name) < 2:
         raise HTTPException(422, "Informe seu nome profissional.")
+    images = {kind: identity_image(getattr(body, kind), kind) for kind in ("photo", "logo") if kind in body.model_fields_set}
     with connect() as con:
         con.execute("UPDATE consultants SET name=? WHERE id=?", (name, store.owner()))
+        for kind, value in images.items():
+            con.execute(f"UPDATE consultants SET {kind}=? WHERE id=?", (value, store.owner()))
         return profile(con.execute("SELECT * FROM consultants WHERE id=?", (store.owner(),)).fetchone())
 
 

@@ -2,7 +2,7 @@
 
 ## O que muda para o profissional
 
-Ao abrir a aplicação, escolha **Criar conta**, informe nome profissional, e-mail e uma senha exclusiva com 12 a 128 caracteres. O cadastro abre um estúdio vazio. **Novo atendimento** inicia o fluxo habitual; **Experimentar com dados fictícios** carrega os oito exemplos acadêmicos somente nesta conta. O nome no estúdio passa a vir do cadastro. Clique no nome ou avatar para editar seu perfil, consultar a situação do plano e sair.
+Ao abrir a aplicação, escolha **Criar conta**, informe nome profissional, e-mail e uma senha exclusiva com 12 a 128 caracteres. O cadastro também oferece uploads opcionais de **foto do consultor** e **logo do estúdio**, com prévia e opção de remoção. O cadastro abre um estúdio vazio. **Novo atendimento** inicia o fluxo habitual; **Experimentar com dados fictícios** carrega os oito exemplos acadêmicos somente nesta conta. O nome no estúdio passa a vir do cadastro. Clique no nome ou avatar para editar seu perfil, consultar a situação do plano e sair.
 
 O consultor é cliente da plataforma. As pessoas atendidas são clientes da consultoria, representadas por atendimentos pertencentes ao consultor. Não possuem login nesta versão. Permanece a exigência acadêmica de identificadores fictícios para os atendimentos. Cada página do dossiê depende da revisão e aprovação explícitas do profissional.
 
@@ -39,3 +39,13 @@ Use `scripts/start.ps1` como antes. Na primeira abertura, cadastre sua própria 
 Na nuvem, usar HTTPS com `COOKIE_SECURE=true` e UI/API no mesmo site, preferencialmente API sob proxy no domínio da UI. O cookie Strict não funciona entre domínios independentes; definir a hospedagem antes de desenhar essa topologia. Esta entrega é um piloto local: recuperação de senha, verificação de e-mail, pagamento real, políticas de retenção, backups automatizados, limite global de tráfego e infraestrutura de produção ainda não estão implementados. SQLite não está cifrado. Não publicar dados reais apenas porque o login já existe.
 
 Referências técnicas: [OWASP Password Storage — scrypt](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html), [OWASP Session Management](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html), [OWASP CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
+
+## Foto e logo por consultor
+
+As imagens são opcionais no cadastro e podem ser incluídas, trocadas ou removidas em **Meu perfil e assinatura**. PNG/JPEG, até 3 MB por arquivo. A foto aparece no avatar do cabeçalho e do perfil na barra lateral após login. A logo aparece na identificação do estúdio e no cabeçalho móvel. Sem imagens, a identidade usa a inicial do nome.
+
+A API aceita `photo` e `logo` como data URLs nos corpos de cadastro e edição de perfil. Os campos correspondentes são devolvidos no perfil da conta autenticada, inclusive no login. Valores `null` na edição removem a imagem; campos omitidos preservam a imagem atual, mantendo compatibilidade com a edição apenas do nome. Imagens inválidas rejeitam a operação inteira, sem salvar parcialmente o nome ou os outros campos.
+
+O servidor valida os bytes e os limites de resolução, aplica a orientação EXIF e reencoda os pixels sem metadados. Foto: JPEG com maior dimensão de até 512 pixels. Logo: PNG com maior dimensão de até 768 pixels e transparência preservada. Os arquivos originais do consultor não são modificados. A gravação acontece somente após o envio do cadastro ou **Salvar perfil**; escolher o arquivo mostra uma prévia local. Enquanto a leitura está em andamento, o envio é bloqueado. Alterações de perfil não salvas também protegem a navegação.
+
+As colunas opcionais `consultants.photo` e `consultants.logo` são acrescentadas aos bancos anteriores, sem alterar nome, senha ou assinatura. As imagens ficam no SQLite local da conta, sem endpoint público por identificador e sem entrar no RAG, na biblioteca ML ou nos traces. Na implantação em nuvem, o armazenamento privado de mídia e a política de retenção precisam acompanhar a infraestrutura de produção.

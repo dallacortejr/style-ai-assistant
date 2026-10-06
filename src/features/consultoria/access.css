@@ -135,6 +135,112 @@
 .account-panel {
   max-width: 740px;
 }
+.identity-uploads {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 16px;
+  min-width: 0;
+}
+.identity-uploads legend {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 5px;
+}
+.identity-uploads legend span {
+  color: var(--muted);
+  font-weight: 400;
+}
+.identity-uploads > p {
+  font-size: 12px;
+  margin: 0 0 16px;
+}
+.identity-upload-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.identity-upload {
+  min-width: 0;
+}
+.identity-preview {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--linen);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.identity-preview.photo {
+  border-radius: 50%;
+}
+.identity-preview.logo {
+  border-radius: 5px;
+}
+.identity-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.identity-preview.logo img {
+  object-fit: contain;
+  padding: 5px;
+}
+.atelier-app .identity-upload input[type="file"] {
+  font-size: 10px;
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+}
+.identity-upload input::file-selector-button {
+  background: var(--linen);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 4px;
+  padding: 7px;
+  cursor: pointer;
+}
+.atelier-app .identity-remove {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 0;
+  background: transparent;
+  color: var(--accent);
+  border: 0;
+  font-size: 11px;
+  cursor: pointer;
+}
+.identity-uploads > small {
+  display: block;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.atelier-app .avatar {
+  overflow: hidden;
+}
+.atelier-app .avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.atelier-app .consultant-logo {
+  display: block;
+  max-width: 52px;
+  max-height: 52px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.atelier-app .brand-symbol {
+  flex-shrink: 0;
+}
 .account-panel form {
   max-width: 480px;
   margin: 25px 0;
@@ -175,5 +281,46 @@
   }
   .access-form-area {
     padding: 36px 24px;
+  }
+}
+
+.atelier-app button.avatar {
+  padding: 0;
+}
+.workspace-logo {
+  display: none;
+}
+.identity-file-label {
+  position: relative;
+  cursor: pointer;
+}
+.identity-file-action {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 7px 9px;
+  color: var(--accent);
+  background: var(--linen);
+  font-size: 11px;
+  text-align: center;
+}
+.atelier-app .identity-upload .identity-file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+.identity-file-label:focus-within .identity-file-action {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+@media (max-width: 760px) {
+  .workspace-logo {
+    display: block;
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    flex-shrink: 0;
   }
 }

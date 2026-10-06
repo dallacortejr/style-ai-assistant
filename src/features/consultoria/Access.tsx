@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { ArrowRight, ShieldCheck, UserRound, LogOut } from "lucide-react";
 import { request, setCsrf } from "./api";
 import { Workspace } from "./Workspace";
+import { IdentityUploads } from "./IdentityUploads";
 
 export type Consultant = {
   id: string;
   name: string;
   email: string;
   created: string;
+  photo: string | null;
+  logo: string | null;
   subscription: {
     status: string;
     cycle: string;
@@ -24,7 +27,12 @@ export function Access() {
     [register, setRegister] = useState(false);
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
+  const [photo, setPhoto] = useState<string | null>(null),
+    [logo, setLogo] = useState<string | null>(null),
+    [uploading, setUploading] = useState(false);
   function accept(data: AccessResponse) {
+    setPhoto(null);
+    setLogo(null);
     setCsrf(data.csrf);
     setConsultant(data.consultant);
     setError("");
@@ -45,6 +53,8 @@ export function Access() {
     await request("/auth/logout", "POST");
     setConsultant(null);
     setCsrf("");
+    setPhoto(null);
+    setLogo(null);
   }
   if (consultant)
     return (
@@ -91,6 +101,7 @@ export function Access() {
           <div className="access-tabs">
             <button
               type="button"
+              disabled={busy || uploading}
               className={!register ? "selected" : ""}
               onClick={() => {
                 setRegister(false);
@@ -101,6 +112,7 @@ export function Access() {
             </button>
             <button
               type="button"
+              disabled={busy || uploading}
               className={register ? "selected" : ""}
               onClick={() => {
                 setRegister(true);
@@ -126,7 +138,7 @@ export function Access() {
                       register ? "/auth/register" : "/auth/login",
                       "POST",
                       {
-                        ...(register ? { name: fields.get("name") } : {}),
+                        ...(register ? { name: fields.get("name"), photo, logo } : {}),
                         email: fields.get("email"),
                         password: fields.get("password"),
                       },
@@ -176,12 +188,22 @@ export function Access() {
                 />
               </label>
               {register && <small>Use uma senha exclusiva com pelo menos 12 caracteres.</small>}
+              {register && (
+                <IdentityUploads
+                  photo={photo}
+                  logo={logo}
+                  onPhoto={setPhoto}
+                  onLogo={setLogo}
+                  onPending={setUploading}
+                  disabled={busy || uploading}
+                />
+              )}
               {error && (
                 <p className="message error" role="alert">
                   {error}
                 </p>
               )}
-              <button className="primary" disabled={busy} type="submit">
+              <button className="primary" disabled={busy || uploading} type="submit">
                 {busy ? "Aguarde…" : register ? "Criar meu estúdio" : "Entrar no estúdio"}
                 <ArrowRight size={17} />
               </button>
@@ -215,11 +237,14 @@ export function Account({
   const [name, setName] = useState(consultant.name),
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
-  const dirty = name !== consultant.name;
+  const [photo, setPhoto] = useState(consultant.photo),
+    [logo, setLogo] = useState(consultant.logo),
+    [uploading, setUploading] = useState(false);
+  const dirty = name !== consultant.name || photo !== consultant.photo || logo !== consultant.logo;
   useEffect(() => {
-    onDirty(dirty);
+    onDirty(dirty || uploading);
     return () => onDirty(false);
-  }, [dirty, onDirty]);
+  }, [dirty, uploading, onDirty]);
   return (
     <section className="panel account-panel">
       <span className="eyebrow">IDENTIDADE DO CONSULTOR</span>
@@ -234,7 +259,10 @@ export function Account({
           setBusy(true);
           setMessage("");
           try {
-            const c = await request<Consultant>("/auth/profile", "PUT", { name });
+            const c = await request<Consultant>("/auth/profile", "PUT", { name, photo, logo });
+            setName(c.name);
+            setPhoto(c.photo);
+            setLogo(c.logo);
             onProfile(c);
             setMessage("Perfil atualizado.");
           } catch (err) {
@@ -259,7 +287,15 @@ export function Account({
           E-mail de acesso
           <input value={consultant.email} readOnly />
         </label>
-        <button className="primary" disabled={busy || !dirty}>
+        <IdentityUploads
+          photo={photo}
+          logo={logo}
+          onPhoto={setPhoto}
+          onLogo={setLogo}
+          onPending={setUploading}
+          disabled={busy || uploading}
+        />
+        <button className="primary" disabled={busy || uploading || !dirty}>
           <UserRound size={17} />
           Salvar perfil
         </button>
@@ -276,7 +312,7 @@ export function Account({
       </div>
       <button
         className="button"
-        disabled={busy || dirty}
+        disabled={busy || dirty || uploading}
         onClick={async () => {
           setBusy(true);
           try {

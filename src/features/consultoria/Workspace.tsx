@@ -127,7 +127,17 @@ export function Workspace({
     <div className="atelier-app">
       <aside className="sidebar">
         <a className="brand" href="/">
-          <span className="brand-symbol">{consultant.name.slice(0, 1).toUpperCase()}</span>
+          <span className="brand-symbol">
+            {consultant.logo ? (
+              <img
+                className="consultant-logo"
+                src={consultant.logo}
+                alt={`Logo de ${consultant.name}`}
+              />
+            ) : (
+              consultant.name.slice(0, 1).toUpperCase()
+            )}
+          </span>
           <span>
             {consultant.name}
             <small>CONSULTORIA DE IMAGEM</small>
@@ -161,7 +171,13 @@ export function Workspace({
             onClick={() => navigate("conta")}
             aria-label="Meu perfil e assinatura"
           >
-            <span className="avatar">{consultant.name.slice(0, 1).toUpperCase()}</span>
+            <span className="avatar">
+              {consultant.photo ? (
+                <img src={consultant.photo} alt={`Foto de ${consultant.name}`} />
+              ) : (
+                consultant.name.slice(0, 1).toUpperCase()
+              )}
+            </span>
             <div>
               <strong>{consultant.name}</strong>
               <small>Conta individual · Piloto</small>
@@ -173,6 +189,13 @@ export function Workspace({
       <main className="workspace">
         <header className="topbar">
           <div className="breadcrumb">
+            {consultant.logo && (
+              <img
+                className="workspace-logo"
+                src={consultant.logo}
+                alt={`Logo de ${consultant.name}`}
+              />
+            )}
             Estúdio <ChevronRight size={14} />
             <span>
               {view === "conta"
@@ -187,7 +210,11 @@ export function Workspace({
               aria-label="Abrir meu perfil"
               onClick={() => navigate("conta")}
             >
-              {consultant.name.slice(0, 1).toUpperCase()}
+              {consultant.photo ? (
+                <img src={consultant.photo} alt={`Foto de ${consultant.name}`} />
+              ) : (
+                consultant.name.slice(0, 1).toUpperCase()
+              )}
             </button>
           </div>
         </header>

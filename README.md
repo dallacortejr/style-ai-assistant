@@ -4,7 +4,7 @@ O consultor conduz o atendimento, registra sua avaliação e aprova o dossiê. O
 
 ## Comece aqui
 
-**Novo: [cadastro, login e contas SaaS](docs/SAAS.md).** Cada consultor cria sua conta e começa com um estúdio vazio. Exemplos fictícios são opcionais. Nome profissional, atendimentos, biblioteca ML e traces pertencem à conta. A assinatura mensal está preparada como piloto sem cobrança; pagamento e nuvem ainda não foram integrados. Dados anteriores ficam preservados e precisam de atribuição administrativa explícita.
+**Novo: [cadastro, login e contas SaaS](docs/SAAS.md).** Cada consultor cria sua conta e começa com um estúdio vazio. Exemplos fictícios são opcionais. Nome profissional, foto e logo opcionais, atendimentos, biblioteca ML e traces pertencem à conta. Foto e logo podem ser incluídas no cadastro e alteradas no perfil. A assinatura mensal está preparada como piloto sem cobrança; pagamento e nuvem ainda não foram integrados. Dados anteriores ficam preservados e precisam de atribuição administrativa explícita.
 
 1. [Arquitetura e mecanismos](docs/ARQUITETURA.md): responsabilidades, fluxos e autoridade.
 2. [Correspondência com a disciplina](docs/DISCIPLINA.md): o que está implementado e o que falta nas etapas 2/3.
