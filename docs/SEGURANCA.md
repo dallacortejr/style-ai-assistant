@@ -33,3 +33,7 @@ O SQLite não está cifrado. Login, isolamento por conta, CSRF e limite de tenta
 5. Implantação separada da API Python e UI Lovable, com HTTPS e secrets do provedor de hospedagem.
 
 Essas etapas são pré-requisitos de produção, não promessas de conformidade já obtida.
+
+## Alertas de dependências reportados pelo GitHub
+
+No envio da atualização SaaS, o GitHub reportou 128 alertas na branch padrão: 7 críticos, 73 altos, 47 moderados e 1 baixo. A contagem foi fornecida pelo servidor Git no push; o impacto de cada alerta ainda não foi analisado nesta implementação. Verificar [Dependabot do repositório](https://github.com/dallacortejr/style-ai-assistant/security/dependabot), identificar as dependências atingidas e corrigir/validar antes da publicação na nuvem. O build e os testes funcionais aprovados não são uma auditoria dessas dependências.
