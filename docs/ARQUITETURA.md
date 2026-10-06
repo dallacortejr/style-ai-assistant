@@ -1,5 +1,7 @@
 # Arquitetura e mecanismos
 
+> Atualização SaaS: cadastro e login individuais, dados e biblioteca editorial isolados por consultor. Mensalidade em piloto sem cobrança; ver [SAAS.md](SAAS.md) para contratos, migração dos dados anteriores e limites de implantação. Esta evolução não substitui as entregas acadêmicas pendentes.
+
 ## Objetivo
 
 Reduzir o trabalho de organizar fichas e redigir dossiês de consultoria de imagem. A avaliação, revisão e decisão final pertencem ao consultor. A IA não recebe ferramenta para aprovar, publicar, alterar uma avaliação profissional ou fazer diagnóstico.
@@ -73,7 +75,7 @@ Traces registram tempo total, etapas, agentes, tokens fornecidos pelo provedor e
 
 ## Limites antes de produção
 
-Este piloto tem um consultor local e clientes fictícios, sem autenticação multiusuário. Não deve receber dados reais ou ser publicado como serviço aberto antes de implementar identidade, autorização, isolamento, backup, consentimento e retenção. A interface Lovable e a API Python têm ciclos de implantação distintos.
+Este piloto tem contas autenticadas e isolamento por consultor, com atendimentos fictícios. Não deve receber dados reais ou ser publicado como serviço aberto antes de concluir HTTPS, verificação/recuperação de acesso, backup, consentimento e retenção. A interface Lovable e a API Python têm ciclos de implantação distintos.
 
 ## Referências exclusivas por atendimento
 

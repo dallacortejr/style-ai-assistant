@@ -4,6 +4,8 @@ O consultor conduz o atendimento, registra sua avaliação e aprova o dossiê. O
 
 ## Comece aqui
 
+**Novo: [cadastro, login e contas SaaS](docs/SAAS.md).** Cada consultor cria sua conta e começa com um estúdio vazio. Exemplos fictícios são opcionais. Nome profissional, atendimentos, biblioteca ML e traces pertencem à conta. A assinatura mensal está preparada como piloto sem cobrança; pagamento e nuvem ainda não foram integrados. Dados anteriores ficam preservados e precisam de atribuição administrativa explícita.
+
 1. [Arquitetura e mecanismos](docs/ARQUITETURA.md): responsabilidades, fluxos e autoridade.
 2. [Correspondência com a disciplina](docs/DISCIPLINA.md): o que está implementado e o que falta nas etapas 2/3.
 3. [Migração](docs/MIGRACAO.md): origem dos recursos e limites da conversão.
@@ -87,11 +89,11 @@ A suíte cria bancos temporários: não testa no banco do consultor. A avaliaç�
 - Na Biblioteca editorial, autorize padrões gerais a partir de páginas aprovadas e atualize o modelo para usá-los no copiloto.
 - Exporte textos aprovados ou uma pasta ZIP para continuar o atendimento.
 
-Sem API, a interface mostra uma prévia em memória com exemplos fictícios. IA, persistência e ZIP dependem do serviço conectado. A prévia nunca simula respostas da IA.
+Sem API, a tela de acesso continua disponível, mas cadastro e login exigem o serviço conectado. A aplicação não autentica contas ficticiamente nem salva alterações somente em memória.
 
 ## Limitações e implantação
 
-Sem login, sem isolamento multiusuário, sem publicação completa. O histórico consultável contém os oito exemplos CSV; os novos atendimentos ficam no SQLite local. Pré-análise facial é opcional e experimental, com instalação separada e modelo local. Não houve migração do banco privado do aplicativo anterior.
+Com login e isolamento por consultor; pagamento e publicação completa ainda pendentes. O histórico consultável contém os oito exemplos CSV; os novos atendimentos ficam no SQLite local. Pré-análise facial é opcional e experimental, com instalação separada e modelo local. Não houve migração do banco privado do aplicativo anterior.
 
 A interface segue o repositório conectado ao Lovable. Uma publicação completa precisa hospedar a API Python, proteger o acesso e configurar `VITE_API_URL` com uma URL HTTPS. Uma prévia visual ou um push Git não representam a entrega final da disciplina.
 

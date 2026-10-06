@@ -1,5 +1,7 @@
 # Evolução orientada pela disciplina e pelo produto
 
+> Atualização SaaS: cadastro e login individuais, dados e biblioteca editorial isolados por consultor. Mensalidade em piloto sem cobrança; ver [SAAS.md](SAAS.md) para contratos, migração dos dados anteriores e limites de implantação. Esta evolução não substitui as entregas acadêmicas pendentes.
+
 ## Prioridade atual
 
 Concluir a migração da interface e a documentação, mantendo as regras de revisão humana e os dados fictícios. Testar com o consultor os campos da ficha e das referências exclusivas por atendimento. O cadastro de referências por atendimento começa vazio e é preenchida pelo profissional, sem classes automáticas ou catálogo fixo.

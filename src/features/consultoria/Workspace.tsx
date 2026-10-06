@@ -21,7 +21,8 @@ import { Library } from "./Library";
 import { References } from "./References";
 import { Dossie } from "./Dossie";
 import { Copiloto, HistoryPanel, Methodology, Monitor } from "./Panels";
-import { sampleSessions, packages } from "./fixtures";
+import { packages } from "./fixtures";
+import { Account, type Consultant } from "./Access";
 import type { Fields, Session } from "./types";
 
 const navigation = [
@@ -36,9 +37,17 @@ const navigation = [
   ["biblioteca", "Biblioteca editorial", BookOpen],
 ] as const;
 
-export function Workspace() {
-  const [sessions, setSessions] = useState<Session[]>(sampleSessions),
-    [sid, setSid] = useState(sampleSessions[0]!.id);
+export function Workspace({
+  consultant,
+  onProfile,
+  onLogout,
+}: {
+  consultant: Consultant;
+  onProfile: (c: Consultant) => void;
+  onLogout: () => Promise<void>;
+}) {
+  const [sessions, setSessions] = useState<Session[]>([]),
+    [sid, setSid] = useState("");
   const [view, setView] = useState("atendimento"),
     [connected, setConnected] = useState(false),
     [loading, setLoading] = useState(true);
@@ -47,19 +56,20 @@ export function Workspace() {
     [notice, setNotice] = useState(""),
     [newOpen, setNewOpen] = useState(false);
   const [unsaved, setUnsaved] = useState(false);
-  const session = sessions.find((s) => s.id === sid) || sessions[0]!,
-    pack = packages.find((p) => p.id === session.pacote)!;
-  const count = pack.paginas.filter((p) => session.paginas[p]?.aprovada).length;
+  const session = sessions.find((s) => s.id === sid) || sessions[0] || null;
+  const pack = packages.find((p) => p.id === session?.pacote) || packages[0]!;
+  const count = session ? pack.paginas.filter((p) => session.paginas[p]?.aprovada).length : 0;
   async function reconnect() {
     setLoading(true);
     try {
       const items = await api.sessions();
       setSessions(items);
-      setSid(items[0]!.id);
+      setSid(items[0]?.id || "");
       setConnected(true);
       setError("");
-    } catch {
+    } catch (err) {
       setConnected(false);
+      setError(err instanceof Error ? err.message : "Não foi possível conectar ao serviço.");
     } finally {
       setLoading(false);
     }
@@ -91,6 +101,7 @@ export function Workspace() {
     setError("");
     setNotice("");
     try {
+      if (!connected) throw new Error("Reconecte o serviço antes de alterar seus dados.");
       await action();
       return true;
     } catch (e) {
@@ -100,74 +111,26 @@ export function Workspace() {
       setBusy(false);
     }
   }
-  function preview(change: (s: Session) => Session) {
-    const next = change(structuredClone(session));
-    next.revision++;
-    replace(next);
-    setNotice("Alteração na prévia. Conecte o serviço para guardar atendimentos.");
-  }
   async function saveFicha(q: Record<string, string>, a: Record<string, Fields>) {
-    return run(async () => {
-      if (connected) replace(await api.ficha(session, q, a));
-      else
-        preview((s) => ({
-          ...s,
-          questionario: q,
-          avaliacao: a,
-          paginas: Object.fromEntries(
-            Object.entries(s.paginas).map(([k, p]) => [
-              k,
-              { ...p, aprovada: false, aprovada_em: null },
-            ]),
-          ),
-        }));
-    });
+    if (!session) return false;
+    return run(async () => replace(await api.ficha(session, q, a)));
   }
   async function savePage(page: string, text: string) {
-    return run(async () => {
-      if (connected) replace(await api.save(session, page, text));
-      else
-        preview((s) => ({
-          ...s,
-          paginas: {
-            ...s.paginas,
-            [page]: {
-              texto: text,
-              aprovada: false,
-              aprovada_em: null,
-              origem: "consultor",
-              fontes: [],
-            },
-          },
-        }));
-    });
+    if (!session) return false;
+    return run(async () => replace(await api.save(session, page, text)));
   }
   async function decision(page: string, action: string) {
-    return run(async () => {
-      if (connected) replace(await api.decision(session, page, action));
-      else
-        preview((s) => ({
-          ...s,
-          paginas: {
-            ...s.paginas,
-            [page]: {
-              ...s.paginas[page]!,
-              aprovada: action === "aprovar",
-              aprovada_em: action === "aprovar" ? new Date().toISOString() : null,
-            },
-          },
-        }));
-    });
+    if (!session) return false;
+    return run(async () => replace(await api.decision(session, page, action)));
   }
   return (
     <div className="atelier-app">
       <aside className="sidebar">
         <a className="brand" href="/">
-          <span className="brand-symbol">
-            h<span>h</span>
-          </span>
+          <span className="brand-symbol">{consultant.name.slice(0, 1).toUpperCase()}</span>
           <span>
-            HELOISA HERMANN<small>CONSULTORIA DE IMAGEM</small>
+            {consultant.name}
+            <small>CONSULTORIA DE IMAGEM</small>
           </span>
         </a>
         <div className="workspace-label">ESTÚDIO DO CONSULTOR</div>
@@ -193,25 +156,39 @@ export function Workspace() {
               <p>A IA apoia. Você conduz e aprova cada entrega.</p>
             </div>
           </div>
-          <div className="consultant">
-            <span className="avatar">C</span>
+          <button
+            className="consultant"
+            onClick={() => navigate("conta")}
+            aria-label="Meu perfil e assinatura"
+          >
+            <span className="avatar">{consultant.name.slice(0, 1).toUpperCase()}</span>
             <div>
-              <strong>Consultor</strong>
-              <small>Ambiente acadêmico</small>
+              <strong>{consultant.name}</strong>
+              <small>Conta individual · Piloto</small>
             </div>
             <span className="online-dot" />
-          </div>
+          </button>
         </div>
       </aside>
       <main className="workspace">
         <header className="topbar">
           <div className="breadcrumb">
             Estúdio <ChevronRight size={14} />
-            <span>{navigation.find((n) => n[0] === view)?.[1]}</span>
+            <span>
+              {view === "conta"
+                ? "Meu perfil e assinatura"
+                : navigation.find((n) => n[0] === view)?.[1]}
+            </span>
           </div>
           <div className="topbar-right">
-            <span className="demo-tag">DADOS FICTÍCIOS</span>
-            <span className="avatar small-avatar">C</span>
+            <span className="demo-tag">PILOTO SEM COBRANÇA</span>
+            <button
+              className="avatar small-avatar"
+              aria-label="Abrir meu perfil"
+              onClick={() => navigate("conta")}
+            >
+              {consultant.name.slice(0, 1).toUpperCase()}
+            </button>
           </div>
         </header>
         <div className="workspace-content">
@@ -221,15 +198,25 @@ export function Workspace() {
               <h1>
                 {view === "atendimento"
                   ? "Cada imagem começa com uma história."
-                  : navigation.find((n) => n[0] === view)?.[1]}
+                  : view === "conta"
+                    ? "Meu perfil e assinatura"
+                    : navigation.find((n) => n[0] === view)?.[1]}
               </h1>
               <p>
                 {view === "atendimento"
                   ? "Organize o atendimento. Transforme sua análise em um dossiê com propósito."
-                  : `${session.identificador} · ${pack.nome}`}
+                  : view === "conta"
+                    ? "Seu cadastro, seu espaço de trabalho e sua assinatura."
+                    : session
+                      ? `${session.identificador} · ${pack.nome}`
+                      : "Crie seu primeiro atendimento para começar."}
               </p>
             </div>
-            <button className="primary" onClick={() => setNewOpen(true)} disabled={busy || unsaved}>
+            <button
+              className="primary"
+              onClick={() => setNewOpen(true)}
+              disabled={busy || unsaved || !connected}
+            >
               <Plus size={17} />
               Novo atendimento
             </button>
@@ -239,7 +226,7 @@ export function Workspace() {
               <span>
                 {loading
                   ? "Conectando ao serviço…"
-                  : "Prévia com exemplos fictícios. IA e gravação de atendimentos precisam do serviço Python conectado."}
+                  : "O serviço está indisponível. Reconecte para acessar e salvar seus atendimentos."}
               </span>
               <button onClick={reconnect} disabled={loading}>
                 Conectar serviço <ArrowUpRight size={14} />
@@ -259,7 +246,7 @@ export function Workspace() {
               {notice}
             </div>
           )}
-          {!["monitoramento", "metodologia"].includes(view) && (
+          {session && !["monitoramento", "metodologia", "conta"].includes(view) && (
             <div className="session-strip">
               <div>
                 <span className="eyebrow">EM ATENDIMENTO</span>
@@ -296,7 +283,7 @@ export function Workspace() {
               </span>
             </div>
           )}
-          {view === "atendimento" && (
+          {session && view === "atendimento" && (
             <>
               <div className="metric-grid">
                 <div>
@@ -406,7 +393,7 @@ export function Workspace() {
               </section>
             </>
           )}
-          {view === "biblioteca" && (
+          {session && view === "biblioteca" && (
             <Library
               key={session.id}
               session={session}
@@ -416,34 +403,25 @@ export function Workspace() {
               onDirty={setUnsaved}
             />
           )}
-          {view === "referencias" && (
+          {session && view === "referencias" && (
             <References
               key={session.id}
               session={session}
               busy={busy}
               onDirty={setUnsaved}
               onSave={(body) =>
-                run(async () => {
-                  if (connected)
-                    replace(
-                      await request<Session>(`/sessions/${session.id}/references`, "POST", {
-                        revision: session.revision,
-                        ...body,
-                      }),
-                    );
-                  else
-                    preview((s) => ({
-                      ...s,
-                      referencias: [
-                        ...(s.referencias || []),
-                        { ...body, id: `REF-${Date.now()}`, quando: new Date().toISOString() },
-                      ],
-                    }));
-                })
+                run(async () =>
+                  replace(
+                    await request<Session>(`/sessions/${session.id}/references`, "POST", {
+                      revision: session.revision,
+                      ...body,
+                    }),
+                  ),
+                )
               }
             />
           )}
-          {view === "fichas" && (
+          {session && view === "fichas" && (
             <Fichas
               key={`${session.id}-${session.revision}`}
               session={session}
@@ -452,7 +430,7 @@ export function Workspace() {
               onSave={saveFicha}
             />
           )}
-          {view === "dossie" && (
+          {session && view === "dossie" && (
             <Dossie
               key={session.id}
               session={session}
@@ -478,7 +456,7 @@ export function Workspace() {
               }
             />
           )}
-          {view === "copiloto" && (
+          {session && view === "copiloto" && (
             <Copiloto
               key={session.id}
               session={session}
@@ -487,11 +465,55 @@ export function Workspace() {
               onSend={(action) => run(async () => replace(await action()))}
             />
           )}
+          {view === "conta" && (
+            <Account
+              consultant={consultant}
+              onProfile={onProfile}
+              onLogout={onLogout}
+              onDirty={setUnsaved}
+            />
+          )}
+          {!session &&
+            !loading &&
+            !["conta", "metodologia", "historico", "monitoramento"].includes(view) && (
+              <section className="panel empty-state">
+                <ClipboardList size={36} />
+                <span className="eyebrow">SEU ESTÚDIO ESTÁ PRONTO</span>
+                <h2>O primeiro atendimento começa aqui.</h2>
+                <p>
+                  Cadastre uma cliente para começar suas fichas, referências e dossiê. Cada
+                  atendimento fica separado dentro da sua conta.
+                </p>
+                <button
+                  className="primary"
+                  disabled={!connected || busy}
+                  onClick={() => setNewOpen(true)}
+                >
+                  <Plus size={17} />
+                  Criar primeiro atendimento
+                </button>
+                <button
+                  className="button"
+                  disabled={!connected || busy}
+                  onClick={() =>
+                    void run(async () => {
+                      const items = await request<Session[]>("/demo/seeds", "POST");
+                      setSessions(items);
+                      setSid(items[0]?.id || "");
+                      setView("atendimento");
+                    })
+                  }
+                >
+                  Experimentar com dados fictícios
+                </button>
+                <small>Os exemplos são opcionais e ficam somente no seu espaço.</small>
+              </section>
+            )}
           {view === "metodologia" && <Methodology />}
           {view === "historico" && <HistoryPanel busy={busy} connected={connected} onRun={run} />}
           {view === "monitoramento" && <Monitor connected={connected} />}
           <footer className="workspace-footer">
-            <span>Heloisa Hermann · Copiloto de Consultoria de Imagem</span>
+            <span>{consultant.name} · Copiloto de Consultoria de Imagem</span>
             <span>O consultor dá a palavra final.</span>
           </footer>
         </div>
@@ -525,26 +547,11 @@ export function Workspace() {
                     pacote: String(f.get("pacote")),
                     objetivo: String(f.get("objetivo")),
                   };
-                  const s = connected
-                    ? await api.create(input)
-                    : {
-                        ...structuredClone(sampleSessions[0]!),
-                        ...input,
-                        id: `PREVIA-${Date.now()}`,
-                        data: new Date().toISOString().slice(0, 10),
-                        revision: 0,
-                        questionario: { objetivo: input.objetivo },
-                        avaliacao: {},
-                        paginas: {},
-                        chat: [],
-                        audit: [],
-                      };
+                  const s = await api.create(input);
                   setSessions((prev) => [...prev, s]);
                   setSid(s.id);
                   setNewOpen(false);
                   setView("fichas");
-                  if (!connected)
-                    setNotice("Atendimento criado na prévia; ele não é guardado após recarregar.");
                 });
               }}
             >

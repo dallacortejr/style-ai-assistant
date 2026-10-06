@@ -5,13 +5,21 @@ Não contém corpus/golden artificial apresentado como dado profissional.
 import argparse
 import json
 from pathlib import Path
-from backend import library
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+from backend import library, auth, store
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--golden", required=True)
+    parser.add_argument("--consultant-email", required=True, help="Conta proprietária do corpus; operação administrativa local.")
     args = parser.parse_args()
+    with auth.connect() as con:
+        account = con.execute("SELECT id FROM consultants WHERE email=?", (auth.email(args.consultant_email),)).fetchone()
+    if not account:
+        raise ValueError("Conta não encontrada.")
+    store.tenant.set(account[0])
     queries = json.loads(Path(args.golden).read_text(encoding="utf-8"))
     if not isinstance(queries, list) or len(queries) < 10:
         raise ValueError("Forneça pelo menos dez consultas de teste independentes, revisadas pelo consultor.")
@@ -41,7 +49,7 @@ def main():
               "metricas": {key: sum(float(r[key]) for r in results)/len(results) for key in
                            ("precision_at_3", "recall_at_3", "f1_at_3", "top1_correto", "reciprocal_rank")},
               "resultados": results}
-    target = Path(__file__).resolve().parents[1] / "runtime" / "evaluation-editorial.json"
+    target = Path(__file__).resolve().parents[1] / "runtime" / "tenants" / store.owner() / "evaluation-editorial.json"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(report["metricas"], indent=2))

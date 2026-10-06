@@ -1,7 +1,7 @@
 """API HTTP. Execute `python -m uvicorn backend.app:app --host 127.0.0.1`.
 
-Uso acadêmico local, um consultor, somente clientes fictícios. Não publicar esta
-API sem autenticação por usuário e isolamento de dados (ver docs/SEGURANCA.md).
+Piloto SaaS local com contas isoladas. Publicação e pagamentos ainda pendentes
+(ver docs/SAAS.md).
 """
 import io
 import json
@@ -20,13 +20,15 @@ from academic import pacotes
 from . import intelligence, store
 from .guards import anonymize, check_input
 from .models import SessionInput, FichaInput, PageInput, ApprovalInput, ChatInput, ImportInput, PhotoInput, ReferenceInput
-from . import photos, library
+from . import photos, library, auth
 from .models import EditorialInput
 
 app = FastAPI(title="Copiloto de Consultoria de Imagem", version="0.2.0")
+app.add_middleware(auth.AuthMiddleware)
+app.include_router(auth.router)
 app.add_middleware(CORSMiddleware,
     allow_origins=os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173").split(","),
-    allow_methods=["GET", "POST", "PUT"], allow_headers=["Content-Type"], allow_credentials=False)
+    allow_methods=["GET", "POST", "PUT"], allow_headers=["Content-Type", "X-CSRF-Token"], allow_credentials=True)
 
 
 @app.exception_handler(KeyError)
@@ -49,7 +51,7 @@ async def conflict(request, exc):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "modo": "academico-local", "llm_provider": os.getenv("LLM_PROVIDER", "ollama"),
+    return {"status": "ok", "modo": "saas-piloto-local", "llm_provider": os.getenv("LLM_PROVIDER", "ollama"),
             "rag_mode": os.getenv("RAG_MODE", "lexical"), "versao": "0.2.0"}
 
 
@@ -67,6 +69,12 @@ def sessions():
 @app.post("/sessions", status_code=201)
 def create_session(body: SessionInput):
     return store.create(body.identificador, body.modo, body.pacote, check_input(body.objetivo))
+
+
+@app.post("/demo/seeds")
+def demo_seeds():
+    store.initialize()
+    return store.list_sessions()
 
 
 @app.get("/sessions/{sid}")
@@ -217,7 +225,7 @@ async def import_folder(request: Request):
 
 @app.get("/traces")
 def traces():
-    p = intelligence.ROOT / "runtime" / "traces.jsonl"
+    p = intelligence.ROOT / "runtime" / "tenants" / store.owner() / "traces.jsonl"
     return [json.loads(line) for line in p.read_text(encoding="utf-8").splitlines()[-100:]][::-1] if p.exists() else []
 
 

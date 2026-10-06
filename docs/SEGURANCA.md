@@ -4,7 +4,7 @@
 
 O copiloto não tem ferramenta de aprovação. O endpoint de decisão recebe uma ação explícita do consultor e confere pacote, texto salvo e revisão. Modificações posteriores invalidam a aprovação. Importações também exigem revisão nova. A hipótese facial fica separada da avaliação técnica.
 
-Essas regras são invariantes de negócio verificadas no servidor. Não são uma autenticação: no piloto local, quem consegue acessar a API tem o mesmo papel de consultor. A identidade do usuário deve ser autenticada e registrada antes de uso compartilhado.
+Essas regras são invariantes de negócio verificadas no servidor. O piloto agora autentica cada consultor por sessão opaca e restringe atendimentos, biblioteca, modelo editorial e traces à conta autenticada. Detalhes e contratos em [SAAS.md](SAAS.md).
 
 ## Proteções implementadas
 
@@ -22,11 +22,11 @@ Essas regras são invariantes de negócio verificadas no servidor. Não são uma
 
 Expressões regulares não detectam toda prompt injection, jailbreak, toxicidade ou PII. Nomes livres e endereços não têm anonimização completa. O buffer de frases do streaming reduz exposição, mas a segurança de saída não é uma garantia contra ataques divididos em múltiplos fragmentos. A importação valida conteúdo e descarta confiança em aprovações, mas não autentica a origem do arquivo.
 
-O SQLite não está cifrado, não há login, isolamento entre usuários, política de retenção, rate limit global ou backup automatizado. CORS não é autenticação. Não expor a API em `0.0.0.0` ou publicar o serviço desta versão para dados reais.
+O SQLite não está cifrado. Login, isolamento por conta, CSRF e limite de tentativas de autenticação estão implementados; recuperação de senha, verificação de e-mail, política de retenção, rate limit global e backup automatizado continuam pendentes. CORS complementa a sessão e não a substitui. Não publicar esta versão para dados reais sem concluir a infraestrutura descrita em SAAS.md.
 
 ## Evolução para aplicação real
 
-1. OIDC/OAuth e identidade por consultor; sessões autenticadas no servidor web.
+1. Evoluir as sessões autenticadas atuais com recuperação de senha, verificação de e-mail e, se escolhido, OIDC/OAuth.
 2. PostgreSQL com isolamento por usuário/organização; armazenamento privado de imagens e URL temporária.
 3. Scanners mais completos com testes adversariais, consentimento, minimização e retenção definida.
 4. Telemetria sanitizada, rate limits, backups e restauração testada.

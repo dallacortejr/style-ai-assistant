@@ -1,5 +1,7 @@
 # ML para a compilação da consultoria personalizada
 
+> Atualização SaaS: cadastro e login individuais, dados e biblioteca editorial isolados por consultor. Mensalidade em piloto sem cobrança; ver [SAAS.md](SAAS.md) para contratos, migração dos dados anteriores e limites de implantação. Esta evolução não substitui as entregas acadêmicas pendentes.
+
 ## Finalidade escolhida pelo usuário
 
 A consultora reaproveita referências de atendimentos concluídos, sobretudo padrões de apresentação de perfil, visagismo e análise. O objetivo é reduzir a busca e o copiar/colar, sem transferir as conclusões sobre uma pessoa para outra. O ML apoia a seleção dos textos que podem ajudar a compilar um novo dossiê. Não classifica roupas, rosto, temperamento ou clientes.
@@ -36,7 +38,7 @@ Para concluir a evidência acadêmica:
 
 - Formar um corpus autorizado e documentar fonte, licença/autorização, tamanho, assuntos, deduplicação e limites.
 - Criar consultas de avaliação independentes dos textos e marcar os IDs de referências relevantes com revisão profissional. Separar conjuntos de desenvolvimento e teste; não ajustar o limiar nas consultas finais.
-- Medir precisão@k, recall@k, F1@k, acerto do primeiro resultado e MRR. Documentar consultas sem referência e falhas de vocabulário. O script `python -m evaluation.editorial --golden caminho.json` gera essas métricas.
+- Medir precisão@k, recall@k, F1@k, acerto do primeiro resultado e MRR. Documentar consultas sem referência e falhas de vocabulário. O script `python -m evaluation.editorial --consultant-email "email-da-conta" --golden caminho.json` gera essas métricas.
 - Para ROC-AUC/classificação, estabelecer primeiro uma tarefa binária rotulada de relevância e justificar as métricas; esta versão é recuperação textual. Não apresentar similaridade como accuracy ou ROC-AUC. Confirmar com a disciplina a adequação dessa tarefa às métricas exigidas; se necessário, acrescentar um classificador supervisionado de relevância com dados rotulados.
 - Medir se os padrões melhoram o dossiê com avaliação da geração: faithfulness, answer relevancy, adequação profissional e tempo economizado. Isso não é medido pelos testes funcionais.
 

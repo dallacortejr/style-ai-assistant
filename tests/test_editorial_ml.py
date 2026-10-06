@@ -11,7 +11,15 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(store, "DB", tmp_path / "library.sqlite3")
     monkeypatch.setattr(intelligence, "ROOT", tmp_path)
     monkeypatch.setenv("RAG_MODE", "lexical")
-    return TestClient(app)
+    c = TestClient(app)
+    result = c.post("/auth/register", json={"name": "Consultor Fictício", "email": "teste@example.invalid", "password": "senha-ficticia-testes-2026"}).json()
+    c.headers["X-CSRF-Token"] = result["csrf"]
+    c.post("/demo/seeds")
+    context = store.tenant.set(result["consultant"]["id"])
+    try:
+        yield c
+    finally:
+        store.tenant.reset(context)
 
 
 def prepare(client):

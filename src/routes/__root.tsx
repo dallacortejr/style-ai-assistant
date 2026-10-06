@@ -74,10 +74,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Heloisa Hermann | Copiloto" },
+      { title: "Estúdio | Copiloto" },
       { name: "description", content: "Consultoria de imagem e estilo com revisão profissional" },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Heloisa Hermann | Copiloto" },
+      { property: "og:title", content: "Estúdio | Copiloto" },
       {
         property: "og:description",
         content: "Consultoria de imagem e estilo com revisão profissional",

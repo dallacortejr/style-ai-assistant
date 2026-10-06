@@ -9,7 +9,7 @@ Execução local em 05/10/2026 (horário de Brasília; registros técnicos usam 
 | TypeScript `tsc --noEmit` | Passou | Contratos e componentes compilam |
 | ESLint | Zero erros; seis avisos de Fast Refresh nos componentes da estrutura original | Regras e formatação verificadas; avisos não bloqueiam build |
 | Vite client + SSR + worker Cloudflare | Passou | Artefato React construído; não comprova implantação pública |
-| `pytest tests -q` | **37 passaram** | Aprovação humana, revisão concorrente, isolamento, ZIP/imagens, SQL restrito, streaming e biblioteca editorial/ML |
+| `pytest` (suíte completa + transferência administrativa) | **53 passaram** | Aprovação humana, revisão concorrente, ZIP/imagens, SQL, streaming, ML e 16 testes de fronteiras SaaS |
 | `python -m evaluation.retrieval` | **14/14** em modo lexical e depois Chroma/Ollama | Onze verificações de presença da fonte esperada entre quatro resultados e três bloqueios de entrada |
 | Índice Chroma/Ollama | **66 trechos** indexados | Embeddings dos resumos próprios gerados no computador |
 | Ollama `llama3.1:8b` | **Cinco execuções reais**: um rascunho e quatro consultas com streaming | Integração real, fontes, latência e tokens do provedor; não são métricas de qualidade da geração |
@@ -45,7 +45,19 @@ Para regenerar a prévia fictícia: `python scripts/generate-fixtures.py` e `pnp
 - Faithfulness/answer relevancy com DeepEval ou equivalente: pendentes. Recall de fonte e testes com LLM simulada não as substituem.
 - Agentes autônomos, equivalência da observabilidade e adequação de React/recuperação ML à rubrica: revisar conforme DISCIPLINA.md.
 - Pré-análise facial e provedor Gemini opcionais: dependências separadas, sem validação completa nesta execução. O componente facial tem endpoint, sem nova interface React dedicada.
-- Login, multiusuário, dados reais e implantação pública completa: pendentes. O piloto opera localmente e a interface sem API entra em prévia explícita.
+- Login e isolamento por consultor: implementados e testados na atualização SaaS. Dados reais, cobrança e implantação pública completa: pendentes. Sem API não há autenticação simulada.
 - Scripts PowerShell de instalação: revisados; não foram executados criando uma nova `.venv`, pois a validação usou dependências isoladas. A instalação de ponta a ponta num computador limpo ainda deve ser conferida.
 
 A descoberta de uma importação antiga durante a checagem visual foi corrigida separando a função comum em `format.ts`; TypeScript, lint e build foram repetidos. Não confundir essa migração e suas evidências locais com a conclusão das etapas 2/3.
+
+## Atualização SaaS
+
+A suíte completa passou com **52 testes**; o teste adicional da transferência administrativa passou separadamente após sua inclusão, totalizando **53 verificações aprovadas**. As novas verificações cobrem acesso anônimo, cadastro, hash de senha, cookie HttpOnly, rotação e revogação da sessão, CSRF/origem, expiração, conta vazia, exemplos opcionais, isolamento de leitura/escrita/exportação/chat, biblioteca/dataset/modelo editorial por conta, traces privados, atualização de perfil, limite de tentativas, ausência de cobrança simulada, enforcement de assinatura, preservação de registros antigos e requisições simultâneas de contas distintas. A migração do schema anterior e a transferência administrativa (conferência sem atribuição, aplicação explícita e preservação de dados de outra conta) também foram testadas em bancos temporários. Nenhuma conta humana foi criada e nenhuma senha pessoal foi usada.
+
+No navegador, foi usada uma conta exclusivamente fictícia: login, estúdio inicialmente vazio, perfil salvo refletindo o novo nome na identidade e footer, exemplos opcionais acesso ao perfil pelo avatar no celular e saída da conta retornando à tela de login. A tela de cadastro foi conferida; cadastro e validação de credenciais foram exercitados pela API nos testes. A conferência móvel usa 390×844. Os screenshots anteriores documentam o piloto anterior; os novos registram a interface SaaS.
+
+![Cadastro de consultor](screenshots/saas-cadastro.png)
+
+[Estúdio vazio de uma nova conta](screenshots/saas-estudio.png) · [Perfil e mensalidade](screenshots/saas-perfil.png) · [Perfil no celular](screenshots/saas-perfil-mobile.png) · [Cadastro no celular](screenshots/saas-cadastro-mobile.png).
+
+Os dados anteriores do ambiente local permanecem sem proprietário até a transferência administrativa explícita. Não se executou a transferência de dados existentes durante esta implementação. O checkout continua indisponível e a versão continua local; os testes não comprovam pagamento real nem implantação na nuvem.

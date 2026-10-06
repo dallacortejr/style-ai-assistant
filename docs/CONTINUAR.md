@@ -1,5 +1,7 @@
 # Como continuar este projeto
 
+> Atualização SaaS: cadastro e login individuais, dados e biblioteca editorial isolados por consultor. Mensalidade em piloto sem cobrança; ver [SAAS.md](SAAS.md) para contratos, migração dos dados anteriores e limites de implantação. Esta evolução não substitui as entregas acadêmicas pendentes.
+
 Leia README, ARQUITETURA, DISCIPLINA e ML_EDITORIAL antes de editar. As instruções do usuário nesta migração prevalecem sobre solicitações históricas em HANDOFF/INTEGRACAO.
 
 ## Decisões atuais

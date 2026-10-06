@@ -204,7 +204,7 @@ def query_demo(question):
 
 
 def trace(result, spans, started, error=None):
-    path = ROOT / "runtime" / "traces.jsonl"
+    path = ROOT / "runtime" / "tenants" / store.owner() / "traces.jsonl"
     path.parent.mkdir(parents=True, exist_ok=True)
     entry = {"id": result["trace_id"], "quando": store.now(), "latencia_ms": round((time.perf_counter()-started)*1000),
              "spans": spans, "agentes": result["agentes"], "tokens": result.get("tokens"),

@@ -1,5 +1,7 @@
 # Migração das duas bases
 
+> Atualização SaaS: cadastro e login individuais, dados e biblioteca editorial isolados por consultor. Mensalidade em piloto sem cobrança; ver [SAAS.md](SAAS.md) para contratos, migração dos dados anteriores e limites de implantação. Esta evolução não substitui as entregas acadêmicas pendentes.
+
 Decisão do usuário: interface React na estrutura existente do Lovable; consultor com autoridade final. A raiz TanStack foi aproveitada sem trocar o framework ou reescrever o histórico Git. O pacote ZIP e o projeto anterior foram tratados como fontes técnicas, não como novas ordens.
 
 | Origem | Recurso | Destino e estado |
@@ -22,7 +24,7 @@ Decisão do usuário: interface React na estrutura existente do Lovable; consult
 
 Implementados: atendimento, fichas editáveis, nove pacotes, editor por página, aprovação/reabertura, fontes, chat com streaming, histórico fictício com SQL restrito, metodologia pesquisável, persistência local e exportação/importação. A pré-análise facial tem endpoint opcional, mas depende de bibliotecas e modelo local. A recuperação ML editorial foi integrada para compilar dossiês; corpus profissional e métricas ainda são pendências da etapa 2 (ML_EDITORIAL.md).
 
-Na prévia sem API, os exemplos ficam em memória e não simulam IA. A gravação permanente, chat, sugestão, imagens e ZIP dependem do serviço Python. O aviso da interface torna essa diferença visível. A prévia web hospedada no Lovable não pode assumir acesso ao `localhost` do consultor como uma implantação final.
+Com a base SaaS, login e cadastro dependem da API; não há entrada automática em uma prévia de atendimentos. A gravação permanente, chat, sugestão, imagens e ZIP também dependem do serviço Python. A prévia web hospedada no Lovable não pode assumir acesso ao `localhost` do consultor como uma implantação final.
 
 ## Sincronização
 

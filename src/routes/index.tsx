@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Workspace } from "../features/consultoria/Workspace";
+import { Access } from "../features/consultoria/Access";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Heloisa Hermann | Copiloto de Consultoria" },
+      { title: "Estúdio | Copiloto de Consultoria" },
       {
         name: "description",
         content: "O consultor conduz. O copiloto apoia os dossiês de imagem e estilo.",
       },
     ],
   }),
-  component: Workspace,
+  component: Access,
 });

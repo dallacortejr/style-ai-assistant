@@ -6,10 +6,19 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
+from contextvars import ContextVar
 from academic import pacotes
 
 ROOT = Path(__file__).resolve().parents[1]
 DB = Path(os.getenv("APP_DB", str(ROOT / "runtime" / "atendimentos.sqlite3")))
+tenant = ContextVar("consultant_id", default=None)
+
+
+def owner():
+    value = tenant.get()
+    if not value:
+        raise RuntimeError("Uma conta autenticada é necessária.")
+    return value
 
 
 def now():
@@ -19,7 +28,10 @@ def now():
 def connect():
     DB.parent.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(DB, timeout=10)
-    con.execute("CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, body TEXT NOT NULL)")
+    con.execute("CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, body TEXT NOT NULL, consultant_id TEXT)")
+    if "consultant_id" not in {r[1] for r in con.execute("PRAGMA table_info(sessions)")}:
+        con.execute("ALTER TABLE sessions ADD COLUMN consultant_id TEXT")
+    con.execute("CREATE INDEX IF NOT EXISTS sessions_owner ON sessions(consultant_id)")
     return con
 
 
@@ -49,20 +61,23 @@ def new_session(sid, identificador, modo, pacote, objetivo, data=None, avaliacao
 
 
 def initialize():
+    """Exemplos são opcionais e pertencem somente à conta que os solicita."""
     with connect() as con:
-        if not con.execute("SELECT COUNT(*) FROM sessions").fetchone()[0]:
-            con.executemany("INSERT INTO sessions VALUES (?,?)", [(s["id"], json.dumps(s)) for s in seeds()])
+        con.execute("BEGIN IMMEDIATE")
+        if not con.execute("SELECT COUNT(*) FROM sessions WHERE consultant_id=?", (owner(),)).fetchone()[0]:
+            for s in seeds():
+                s["id"] = owner() + "-" + s["id"]
+                con.execute("INSERT INTO sessions VALUES (?,?,?)", (s["id"], json.dumps(s), owner()))
 
 
 def list_sessions():
-    initialize()
     with connect() as con:
-        return [json.loads(r[0]) for r in con.execute("SELECT body FROM sessions ORDER BY id")]
+        return [json.loads(r[0]) for r in con.execute("SELECT body FROM sessions WHERE consultant_id=? ORDER BY json_extract(body, '$.identificador'),id", (owner(),))]
 
 
 def get(sid):
     with connect() as con:
-        row = con.execute("SELECT body FROM sessions WHERE id=?", (sid,)).fetchone()
+        row = con.execute("SELECT body FROM sessions WHERE id=? AND consultant_id=?", (sid, owner())).fetchone()
     if not row:
         raise KeyError(sid)
     result = json.loads(row[0])
@@ -82,7 +97,7 @@ def search_references(sid, query):
 def create(identificador, modo, pacote, objetivo):
     s = new_session("S" + uuid4().hex[:10], identificador, modo, pacote, objetivo)
     with connect() as con:
-        con.execute("INSERT INTO sessions VALUES (?,?)", (s["id"], json.dumps(s)))
+        con.execute("INSERT INTO sessions VALUES (?,?,?)", (s["id"], json.dumps(s), owner()))
     return s
 
 
@@ -94,14 +109,14 @@ def import_session(client, questionario, avaliacao, paginas, fotos, referencias)
     s["revision"] = 1
     s["audit"] = [{"evento": "pasta_importada", "ator": "consultor", "quando": now(), "revision": 1}]
     with connect() as con:
-        con.execute("INSERT INTO sessions VALUES (?,?)", (s["id"], json.dumps(s)))
+        con.execute("INSERT INTO sessions VALUES (?,?,?)", (s["id"], json.dumps(s), owner()))
     return s
 
 
 def mutate(sid, revision, action, change, actor="consultor"):
     with connect() as con:
         con.execute("BEGIN IMMEDIATE")
-        row = con.execute("SELECT body FROM sessions WHERE id=?", (sid,)).fetchone()
+        row = con.execute("SELECT body FROM sessions WHERE id=? AND consultant_id=?", (sid, owner())).fetchone()
         if not row:
             raise KeyError(sid)
         s = json.loads(row[0])
@@ -110,7 +125,7 @@ def mutate(sid, revision, action, change, actor="consultor"):
         change(s)
         s["revision"] += 1
         s["audit"].append({"evento": action, "ator": actor, "quando": now(), "revision": s["revision"]})
-        con.execute("UPDATE sessions SET body=? WHERE id=?", (json.dumps(s), sid))
+        con.execute("UPDATE sessions SET body=? WHERE id=? AND consultant_id=?", (json.dumps(s), sid, owner()))
     return s
 
 

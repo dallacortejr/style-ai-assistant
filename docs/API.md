@@ -1,5 +1,7 @@
 # Contrato HTTP
 
+> Atualização SaaS: cadastro e login individuais, dados e biblioteca editorial isolados por consultor. Mensalidade em piloto sem cobrança; ver [SAAS.md](SAAS.md) para contratos, migração dos dados anteriores e limites de implantação. Esta evolução não substitui as entregas acadêmicas pendentes.
+
 Serviço local: `http://127.0.0.1:8000`. Documentação interativa gerada automaticamente: `/docs`. Todos os identificadores de clientes novos seguem `Cliente A`, `Cliente B`, `Cliente AA` etc. Os IDs de sessões são gerados pelo servidor.
 
 | Método | Rota | Função |
@@ -49,3 +51,19 @@ Sem autenticação por usuário nesta versão. CORS permite somente as origens l
 | GET | `/library/dataset` | Exportar corpus autorizado sem proveniência pessoal |
 
 A autorização de um padrão não aprova páginas nem altera a ficha. Nenhum atendimento inteiro entra automaticamente no modelo. A recuperação retorna similaridade textual, não confiança probabilística. ML_EDITORIAL.md documenta o ajuste, cache, corpus e métricas pendentes.
+
+## Identidade e assinatura
+
+Todos os endpoints de dados exigem `consultoria_session`, cookie HttpOnly. Escritas exigem também `X-CSRF-Token`. O browser usa `credentials: include`. A identidade/proprietário não é um campo aceito das entradas.
+
+| Método | Caminho | Resultado |
+| --- | --- | --- |
+| POST | `/auth/register` | `{name,email,password}`; 201, conta e CSRF; cookie de sessão |
+| POST | `/auth/login` | `{email,password}`; conta e CSRF; troca a sessão do navegador |
+| GET | `/auth/me` | Conta atual e CSRF, ou 401 |
+| PUT | `/auth/profile` | `{name}`; perfil atualizado; não altera senha, e-mail nem assinatura |
+| POST | `/auth/logout` | Revoga a sessão e remove o cookie |
+| POST | `/demo/seeds` | Carrega exemplos fictícios somente se a conta está vazia |
+| POST | `/billing/checkout` | 503: provedor não configurado; não cria cobrança |
+
+A conta pública contém `id,name,email,created,subscription`. A assinatura inclui `status,cycle,provider,checkout_available,price`, com estado inicial `pilot`, ciclo `monthly` e valores comerciais indefinidos. Tentativas de modificar o status via perfil retornam 422. Falta de sessão: 401; CSRF/origem: 403; registro de outra conta: 404; assinatura inativa sob enforcement: 402; limite de autenticação: 429. `/health` e schemas OpenAPI continuam públicos sem dados privados.

@@ -1,4 +1,5 @@
 @import "./atelier.css";
+@import "./features/consultoria/access.css";
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";

@@ -17,14 +17,16 @@ THEMES = ("perfil", "visagismo", "coloracao", "proporcoes", "metodologia")
 
 def connect():
     con = store.connect()
-    con.execute("CREATE TABLE IF NOT EXISTS editorial (id TEXT PRIMARY KEY, body TEXT NOT NULL)")
-    con.execute("CREATE TABLE IF NOT EXISTS editorial_model (id INTEGER PRIMARY KEY, body TEXT NOT NULL)")
+    con.execute("CREATE TABLE IF NOT EXISTS editorial (id TEXT PRIMARY KEY, body TEXT NOT NULL, consultant_id TEXT)")
+    if "consultant_id" not in {r[1] for r in con.execute("PRAGMA table_info(editorial)")}:
+        con.execute("ALTER TABLE editorial ADD COLUMN consultant_id TEXT")
+    con.execute("CREATE TABLE IF NOT EXISTS editorial_models (consultant_id TEXT PRIMARY KEY, body TEXT NOT NULL)")
     return con
 
 
 def records():
     with connect() as con:
-        return [json.loads(r[0]) for r in con.execute("SELECT body FROM editorial ORDER BY id")]
+        return [json.loads(r[0]) for r in con.execute("SELECT body FROM editorial WHERE consultant_id=? ORDER BY id", (store.owner(),))]
 
 
 def active():
@@ -46,7 +48,7 @@ def publish(sid, page, body):
     check_input(title)
     with connect() as con:
         con.execute("BEGIN IMMEDIATE")
-        row = con.execute("SELECT body FROM sessions WHERE id=?", (sid,)).fetchone()
+        row = con.execute("SELECT body FROM sessions WHERE id=? AND consultant_id=?", (sid, store.owner())).fetchone()
         if not row:
             raise KeyError(sid)
         s = json.loads(row[0])
@@ -57,7 +59,7 @@ def publish(sid, page, body):
         if not original or not original["aprovada"]:
             raise ValueError("A origem deve ser uma página salva e aprovada pelo consultor.")
         digest = hashlib.sha256(text.encode()).hexdigest()
-        existing = [json.loads(r[0]) for r in con.execute("SELECT body FROM editorial")]
+        existing = [json.loads(r[0]) for r in con.execute("SELECT body FROM editorial WHERE consultant_id=?", (store.owner(),))]
         if any(r["ativa"] and r["hash"] == digest for r in existing):
             raise ValueError("Este padrão já está na biblioteca.")
         record = {"id": uuid4().hex, "titulo": title, "tema": body.tema, "texto": text,
@@ -65,20 +67,20 @@ def publish(sid, page, body):
                   "origem": {"sessao_id": sid, "pagina": page, "revision": s["revision"],
                              "hash_pagina": hashlib.sha256(original["texto"].encode()).hexdigest()},
                   "audit": [{"evento": "padrao_autorizado", "quando": store.now(), "ator": "consultor"}]}
-        con.execute("INSERT INTO editorial VALUES (?,?)", (record["id"], json.dumps(record)))
+        con.execute("INSERT INTO editorial VALUES (?,?,?)", (record["id"], json.dumps(record), store.owner()))
     return record
 
 
 def revoke(rid):
     with connect() as con:
         con.execute("BEGIN IMMEDIATE")
-        row = con.execute("SELECT body FROM editorial WHERE id=?", (rid,)).fetchone()
+        row = con.execute("SELECT body FROM editorial WHERE id=? AND consultant_id=?", (rid, store.owner())).fetchone()
         if not row:
             raise KeyError(rid)
         r = json.loads(row[0])
         r["ativa"] = False
         r["audit"].append({"evento": "padrao_retirado", "quando": store.now(), "ator": "consultor"})
-        con.execute("UPDATE editorial SET body=? WHERE id=?", (json.dumps(r), rid))
+        con.execute("UPDATE editorial SET body=? WHERE id=? AND consultant_id=?", (json.dumps(r), rid, store.owner()))
     return r
 
 
@@ -102,7 +104,7 @@ def fit(data):
 def status():
     rows = active()
     with connect() as con:
-        saved = con.execute("SELECT body FROM editorial_model WHERE id=1").fetchone()
+        saved = con.execute("SELECT body FROM editorial_models WHERE consultant_id=?", (store.owner(),)).fetchone()
     model = json.loads(saved[0]) if saved else None
     stale = bool(model and model["corpus_hash"] != fingerprint(corpus(rows)))
     return {"trechos_autorizados": len(rows), "modelo": model, "desatualizado": stale,
@@ -120,7 +122,7 @@ def train():
              "corpus_hash": fingerprint(data), "trechos": len(data), "vocabulario": len(vectorizer.vocabulary_),
              "treinado_em": store.now(), "sklearn": sklearn.__version__, "metricas_validacao": None}
     with connect() as con:
-        con.execute("INSERT OR REPLACE INTO editorial_model VALUES (1,?)", (json.dumps(model),))
+        con.execute("INSERT OR REPLACE INTO editorial_models VALUES (?,?)", (store.owner(), json.dumps(model)))
     return status()
 
 
