@@ -21,3 +21,9 @@ Leia README, ARQUITETURA, DISCIPLINA e ML_EDITORIAL antes de editar. As instruç
 4. Antes da implantação completa: autenticação, isolamento por usuário/organização, armazenamento protegido e API HTTPS. Configurar VITE_API_URL e testar a integração publicada.
 
 Estrutura funcional, testes e limites estão em VALIDACAO.md. Não reescrever o histórico Git publicado; um push comum na branch conectada mantém a sincronização com Lovable.
+
+## Retomar a execução local
+
+Com as dependências já instaladas, execute `scripts/start.ps1` e mantenha a API ativa no terminal. Abra `http://127.0.0.1:3000/` e recarregue a aba após reiniciar o servidor ou atualizar dependências; uma aba aberta anteriormente pode manter módulos do servidor antigo.
+
+Em 06/10/2026, a aba existente mostrou `Cannot read properties of null (reading 'useContext')`. O recarregamento recuperou a interface; cadastro, login com conta fictícia, persistência da sessão e logout foram conferidos no navegador. Isso é compatível com módulos antigos na aba, sem diagnóstico definitivo da origem. Não foi necessário alterar componentes nem dependências. Se voltar a ocorrer após recarregar, conferir o console e os módulos carregados antes de mudar a configuração do React.
